@@ -7,3 +7,5 @@ python-dotenv==1.1.0
 google-genai==2.17.0
 truststore>=0.9
 beautifulsoup4==4.12.3
+yfinance>=0.2.40
+certifi>=2024.2.2
