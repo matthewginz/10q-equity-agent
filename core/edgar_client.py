@@ -115,17 +115,22 @@ class FilingRef:
         )
 
 
-def latest_10q(ticker: str) -> FilingRef | None:
-    """The most recently filed 10-Q for this ticker, or None if the ticker
-    doesn't resolve or has no 10-Q on file (e.g. not a US filer)."""
+def nth_recent_10q(ticker: str, n: int = 0) -> FilingRef | None:
+    """The nth-most-recent 10-Q for this ticker (n=0 is the latest). Exists
+    so the backtest harness can deliberately pull an OLDER filing -- the
+    latest one has no future to check a stance against yet, so "most
+    recent" alone can't be backtested."""
     cik = ticker_to_cik(ticker)
     if cik is None:
         return None
     data = _get(_SUBMISSIONS_URL.format(cik=cik))
     company_name = data.get("name", ticker.upper())
     recent = data["filings"]["recent"]
+    seen = 0
     for i, form in enumerate(recent["form"]):
-        if form == "10-Q":
+        if form != "10-Q":
+            continue
+        if seen == n:
             return FilingRef(
                 accession_number=recent["accessionNumber"][i],
                 filing_date=recent["filingDate"][i],
@@ -134,7 +139,14 @@ def latest_10q(ticker: str) -> FilingRef | None:
                 company_name=company_name,
                 cik=cik,
             )
+        seen += 1
     return None
+
+
+def latest_10q(ticker: str) -> FilingRef | None:
+    """The most recently filed 10-Q for this ticker, or None if the ticker
+    doesn't resolve or has no 10-Q on file (e.g. not a US filer)."""
+    return nth_recent_10q(ticker, 0)
 
 
 def fetch_filing_text(filing: FilingRef, max_chars: int = 60_000) -> str:

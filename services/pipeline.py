@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from core.market_data import MarketSnapshot, format_market_snapshot
 from services.gemini_client import generate
 
 _FMT_SYSTEM = (
@@ -60,7 +61,7 @@ def _fmt_ratios(ratios: dict) -> str:
 
 def run_analysis(
     company: str, ticker: str, report_date: str, ratios: dict, filing_text: str,
-    on_step=None, on_step_done=None,
+    market: MarketSnapshot | None = None, on_step=None, on_step_done=None,
 ) -> AnalysisRun:
     """on_step(step_number, title), called just before each step runs, and
     on_step_done(step_number, title, output), called right after -- together
@@ -110,25 +111,54 @@ def run_analysis(
     run.steps.append(StepResult("2. Risk & MD&A Synthesis", s2))
     on_step_done(2, "Risk & MD&A Synthesis", s2)
 
-    # Step 3 -- consistency check: does the qualitative story match the numbers?
-    on_step(3, "Narrative-vs-Numbers Consistency Check")
+    # Step 3 -- segment/geographic detail and forward-looking guidance, pulled
+    # directly from the filing text. Step 1 is necessarily consolidated-only
+    # (that's all XBRL ratios give you); when one line item swings hard (e.g.
+    # operating income down while revenue is up), the filing's own segment
+    # breakdown is usually the fastest way to see WHERE that came from --
+    # without this, the final reconciliation step has nothing concrete to
+    # point to beyond "the numbers don't line up."
+    on_step(3, "Segment & Forward-Looking Detail")
     s3 = generate(
+        system=_FMT_SYSTEM,
+        user=(
+            f"Below is the same excerpt of {company}'s 10-Q filing text used in the prior step:\n\n{filing_excerpt}\n\n"
+            "Extract only what the filing ACTUALLY discloses -- never estimate or infer a figure it doesn't state:\n"
+            "1. Segment or geographic revenue/margin breakdown, if the filing reports results by segment or "
+            "region -- name each segment/region and its stated performance. If the filer only reports one "
+            "consolidated segment, say so explicitly rather than inventing a breakdown.\n"
+            "2. Any forward-looking guidance or outlook management gave (revenue/margin targets, expected "
+            "demand, stated expectations for the next quarter/year). If none is given, say so.\n"
+            "3. Material recent developments disclosed in the filing (M&A, restructuring, discontinued "
+            "operations, material legal proceedings, subsequent events) -- name each with the filing's own "
+            "stated detail, not a generalization."
+        ),
+        max_output_tokens=700,
+    )
+    run.steps.append(StepResult("3. Segment & Forward-Looking Detail", s3))
+    on_step_done(3, "Segment & Forward-Looking Detail", s3)
+
+    # Step 4 -- consistency check: does the qualitative story match the numbers?
+    on_step(4, "Narrative-vs-Numbers Consistency Check")
+    s4 = generate(
         system=_FMT_SYSTEM,
         user=(
             f"Quantitative snapshot (step 1):\n{s1}\n\n"
             f"Risk/MD&A synthesis (step 2):\n{s2}\n\n"
-            "Cross-check these two: does management's narrative in the filing match what the actual "
-            "numbers show? Flag any place where the tone of the disclosure seems more optimistic or "
-            "more cautious than the ratios support. If nothing material is available to check, say so."
+            f"Segment & forward-looking detail (step 3):\n{s3}\n\n"
+            "Cross-check these: does management's narrative in the filing (steps 2-3) match what the actual "
+            "numbers show (step 1)? Flag any place where the tone of the disclosure, or a segment's stated "
+            "performance, seems more optimistic or more cautious than the consolidated ratios support. If "
+            "nothing material is available to check, say so."
         ),
         max_output_tokens=600,
     )
-    run.steps.append(StepResult("3. Narrative-vs-Numbers Consistency Check", s3))
-    on_step_done(3, "Narrative-vs-Numbers Consistency Check", s3)
+    run.steps.append(StepResult("4. Narrative-vs-Numbers Consistency Check", s4))
+    on_step_done(4, "Narrative-vs-Numbers Consistency Check", s4)
 
-    # Step 4 -- capital allocation / sustainability read.
-    on_step(4, "Capital Allocation & Sustainability")
-    s4 = generate(
+    # Step 5 -- capital allocation / sustainability read.
+    on_step(5, "Capital Allocation & Sustainability")
+    s5 = generate(
         system=_FMT_SYSTEM,
         user=(
             f"Quantitative snapshot:\n{s1}\n\n"
@@ -139,27 +169,52 @@ def run_analysis(
         ),
         max_output_tokens=500,
     )
-    run.steps.append(StepResult("4. Capital Allocation & Sustainability", s4))
-    on_step_done(4, "Capital Allocation & Sustainability", s4)
+    run.steps.append(StepResult("5. Capital Allocation & Sustainability", s5))
+    on_step_done(5, "Capital Allocation & Sustainability", s5)
 
-    # Step 5 -- final recommendation, synthesizing steps 1-4, not raw data.
-    on_step(5, "Final Equity Stance")
-    s5 = generate(
+    # Step 6 -- final recommendation, synthesizing steps 1-5 AND real market
+    # context, not raw data. The market block is what lets this step talk
+    # about today's actual price and sentiment instead of only the filing's
+    # own fundamentals in isolation -- without it, a well-reasoned bearish
+    # read on bad fundamentals (e.g. negative margins) has no way to
+    # reconcile against the fact the stock may have already priced that in,
+    # or already rallied past it. Step 3's segment/guidance detail is what
+    # lets the "why it's at this price" reconciliation point at something
+    # concrete (a specific segment or a stated outlook) instead of just the
+    # consolidated numbers.
+    on_step(6, "Final Equity Stance")
+    market_block = format_market_snapshot(market)
+    s6 = generate(
         system=_FMT_SYSTEM,
         user=(
-            f"You have four prior analysis steps for {company} ({ticker}):\n\n"
+            f"You have five prior analysis steps for {company} ({ticker}):\n\n"
             f"1) Quantitative snapshot:\n{s1}\n\n"
             f"2) Risk/MD&A synthesis:\n{s2}\n\n"
-            f"3) Consistency check:\n{s3}\n\n"
-            f"4) Capital allocation read:\n{s4}\n\n"
-            "Synthesize a final equity research stance: Bullish / Neutral / Bearish, with a one-paragraph "
-            "thesis, the single biggest supporting factor, and the single biggest risk to that thesis. "
-            "Ground every claim in the four steps above -- do not introduce new figures."
+            f"3) Segment & forward-looking detail:\n{s3}\n\n"
+            f"4) Consistency check:\n{s4}\n\n"
+            f"5) Capital allocation read:\n{s5}\n\n"
+            f"Market context:\n{market_block}\n\n"
+            "Begin your response with EXACTLY this heading as the first line, nothing before it: "
+            "'### Final Equity Research Stance: Bullish' or '### Final Equity Research Stance: Neutral' or "
+            "'### Final Equity Research Stance: Bearish' -- pick the one word that matches your call. "
+            "Then, below that heading, cover in order:\n"
+            "1. Sentiment: in one paragraph, what the market's sentiment on this stock looks like right now, "
+            "given everything above.\n"
+            "2. Why it's at this price: if any single metric in the steps above looks alarming taken alone "
+            "(e.g. a sharp operating income or margin decline), name the specific other components from those "
+            "same steps that offset it and still support today's valuation -- pointing at a specific segment "
+            "or stated outlook from step 3 where relevant -- or say plainly if nothing does and the metric is "
+            "a real, unoffset red flag.\n"
+            "3. The single biggest supporting factor and the single biggest risk to the thesis.\n"
+            "4. Your recommendation as the analyst, and the reasoning behind it.\n"
+            "Ground every claim in the five steps and the market context above -- do not introduce new figures, "
+            "and do not speculate about market efficiency or whether news is 'priced in' in the abstract; just "
+            "explain the picture as it stands and make the call."
         ),
-        max_output_tokens=500,
+        max_output_tokens=700,
     )
-    run.recommendation = s5
-    on_step_done(5, "Final Equity Stance", s5)
+    run.recommendation = s6
+    on_step_done(6, "Final Equity Stance", s6)
     return run
 
 

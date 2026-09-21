@@ -3,7 +3,7 @@
 
 Enter any US-listed ticker or company name -> pulls its latest real 10-Q
 from SEC EDGAR (free, public, no key) -> computes standardized financial
-ratios from the filing's actual XBRL data -> runs a 5-step LLM analysis
+ratios from the filing's actual XBRL data -> runs a 6-step LLM analysis
 pipeline (services/pipeline.py) -> renders a quantitative dashboard, risk
 synthesis, and a final equity research stance. Supports comparing two
 tickers side by side.
@@ -22,7 +22,7 @@ import streamlit as st
 from google.genai.errors import ClientError, ServerError
 from streamlit_searchbox import st_searchbox
 
-from core import edgar_client, ratios as ratios_mod
+from core import edgar_client, market_data, ratios as ratios_mod
 from services.pipeline import AnalysisRun, compare_stances, run_analysis
 
 st.set_page_config(page_title="10-Q Equity Research Agent", page_icon="\U0001F4C8", layout="wide")
@@ -78,6 +78,48 @@ st.markdown(
     margin: 0.5rem 0 1rem 0;
 }
 .kpi-win { color: var(--bull); font-weight: 700; }
+.market-card {
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    background: rgba(37,99,235,0.04);
+    border: 1px solid rgba(37,99,235,0.12);
+    margin-bottom: 1rem;
+}
+.market-price { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
+.market-asof { font-size: 0.8rem; color: var(--neutral); font-weight: 500; margin-left: 0.5rem; }
+.market-deltas { display: flex; gap: 1.25rem; margin: 0.3rem 0 0.85rem; font-size: 0.9rem; font-weight: 600; }
+.delta-pos { color: var(--bull); }
+.delta-neg { color: var(--bear); }
+.range-track {
+    position: relative;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(220,38,38,0.30), rgba(107,114,128,0.25), rgba(22,163,74,0.30));
+}
+.range-marker {
+    position: absolute;
+    top: -4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    transform: translateX(-50%);
+}
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--neutral);
+    margin-top: 0.45rem;
+}
+.ratio-table { width: 100%; border-collapse: collapse; margin-bottom: 0.85rem; }
+.ratio-table td { padding: 0.35rem 0.6rem; border-bottom: 1px solid rgba(107,114,128,0.15); font-size: 0.9rem; }
+.ratio-label { color: var(--neutral); text-transform: capitalize; }
+.ratio-value { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.cell-pos { background: rgba(22,163,74,0.10); color: var(--bull); border-radius: 0.3rem; }
+.cell-neg { background: rgba(220,38,38,0.10); color: var(--bear); border-radius: 0.3rem; }
 .verdict-card {
     background: rgba(37,99,235,0.05);
     border: 1px solid rgba(37,99,235,0.2);
@@ -102,10 +144,11 @@ with st.expander("How this actually works", expanded=False):
         "2. **Ratio engine** — computes profitability, liquidity, leverage, and cash-flow ratios directly from "
         "that XBRL data, with duration- and period-alignment checks so a quarterly figure never gets silently "
         "mixed with an annual one.\n"
-        "3. **5-step LLM pipeline** — quantitative snapshot → risk/MD&A synthesis → narrative-vs-numbers "
-        "consistency check → capital allocation read → final equity stance. Each step is grounded in the real "
-        "prior steps, not five independent prompts against the same raw dump, and each step's finding is shown "
-        "live as it completes."
+        "3. **6-step LLM pipeline** — quantitative snapshot → risk/MD&A synthesis → segment & forward-looking "
+        "detail → narrative-vs-numbers consistency check → capital allocation read → final equity stance "
+        "(sentiment, price reconciliation, and a recommendation, grounded in real current market data). Each "
+        "step is grounded in the real prior steps, not six independent prompts against the same raw dump, and "
+        "each step's finding is shown live as it completes."
     )
 
 # ── Company logos (curated domains for Clearbit's free logo API; anything
@@ -321,6 +364,7 @@ class Bundle:
     facts_json: dict
     computed: dict
     run: AnalysisRun
+    market: "market_data.MarketSnapshot | None"
 
 
 def fetch_and_analyze(ticker: str) -> "Bundle | None":
@@ -365,15 +409,25 @@ def fetch_and_analyze(ticker: str) -> "Bundle | None":
         st.error(f"Couldn't fetch {ticker}'s filing text: {exc}. Try again shortly.")
         return None
 
-    # ── 5-step pipeline with live progress AND a live recap per step ──
+    # Live price/valuation context for the final synthesis step -- best
+    # effort only. A market-data hiccup shouldn't block the whole analysis,
+    # since the pipeline degrades gracefully to fundamentals-only (same
+    # "None means not available, never fabricated" contract as data_gaps).
+    with st.spinner(f"Fetching {ticker}'s current market price..."):
+        try:
+            snapshot = market_data.fetch_market_snapshot(ticker)
+        except Exception:  # noqa: BLE001 -- best-effort; see docstring above
+            snapshot = None
+
+    # ── 6-step pipeline with live progress AND a live recap per step ──
     run = None
     try:
-        with st.status(f"Running 5-step research pipeline for {ticker}...", expanded=True) as status:
+        with st.status(f"Running 6-step research pipeline for {ticker}...", expanded=True) as status:
             def _on_step(i, title):
                 # expanded=True must be re-asserted on every update() call --
                 # st.status can silently fall back to collapsed otherwise,
                 # which is what was closing the recap after each step.
-                status.update(label=f"{ticker} — Step {i}/5: {title}", expanded=True)
+                status.update(label=f"{ticker} — Step {i}/6: {title}", expanded=True)
 
             def _on_step_done(i, title, output):
                 # Used to hard-truncate this to 500 chars -- verified live
@@ -384,12 +438,12 @@ def fetch_and_analyze(ticker: str) -> "Bundle | None":
                 # as if there were nothing there -- the real content existed,
                 # it just never reached the page. Show the full real output.
                 rendered = escape_markdown_math(output)
-                st.markdown(f"**✓ Step {i}/5 — {title}**")
+                st.markdown(f"**✓ Step {i}/6 — {title}**")
                 st.markdown(f'<div class="step-recap">{rendered}</div>', unsafe_allow_html=True)
 
             run = run_analysis(
                 filing.company_name, ticker, filing.report_date, computed, filing_text,
-                on_step=_on_step, on_step_done=_on_step_done,
+                market=snapshot, on_step=_on_step, on_step_done=_on_step_done,
             )
             status.update(label=f"{ticker} analysis complete", state="complete", expanded=True)
     except RuntimeError as exc:
@@ -409,7 +463,7 @@ def fetch_and_analyze(ticker: str) -> "Bundle | None":
 
     if run is None:
         return None
-    return Bundle(ticker=ticker, filing=filing, facts_json=facts_json, computed=computed, run=run)
+    return Bundle(ticker=ticker, filing=filing, facts_json=facts_json, computed=computed, run=run, market=snapshot)
 
 
 # ── Render building blocks -- each renders into whatever container is
@@ -422,6 +476,39 @@ def render_company_card(bundle: Bundle) -> None:
         f'<div class="company-card-text"><b>{filing.company_name}</b> ({bundle.ticker})<br/>'
         f"10-Q for period ending {filing.report_date}, filed {filing.filing_date}. "
         f'<a href="{filing.document_url}" target="_blank">View the real filing on SEC.gov →</a></div></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def render_market_snapshot(bundle: Bundle) -> None:
+    """The price/valuation context the pipeline's final stance step actually
+    reasons from (services/pipeline.py step 6) -- fetched in fetch_and_analyze
+    but, until this function existed, never shown anywhere in the UI. Best
+    effort: renders nothing if the market fetch failed, matching the same
+    "None means not available" contract as the rest of this app rather than
+    showing a broken or fabricated card."""
+    m = bundle.market
+    if m is None:
+        return
+    span = m.fifty_two_week_high - m.fifty_two_week_low
+    position_pct = max(0.0, min(100.0, (m.price - m.fifty_two_week_low) / span * 100)) if span > 0 else 50.0
+
+    def _delta(label: str, pct: float | None) -> str:
+        if pct is None:
+            return ""
+        cls = "delta-pos" if pct >= 0 else "delta-neg"
+        return f'<span class="{cls}">{label}: {pct:+.1%}</span>'
+
+    deltas = " ".join(d for d in (_delta("90d", m.return_90d_pct), _delta("365d", m.return_365d_pct)) if d)
+    st.markdown(
+        f'<div class="market-card">'
+        f'<span class="market-price">${m.price:,.2f}</span>'
+        f'<span class="market-asof">as of {m.as_of}</span>'
+        f'<div class="market-deltas">{deltas}</div>'
+        f'<div class="range-track"><div class="range-marker" style="left:{position_pct:.1f}%;"></div></div>'
+        f'<div class="range-labels"><span>${m.fifty_two_week_low:,.2f}</span>'
+        f'<span>52-week range</span><span>${m.fifty_two_week_high:,.2f}</span></div>'
+        f"</div>",
         unsafe_allow_html=True,
     )
 
@@ -452,13 +539,32 @@ def render_charts(bundle: Bundle) -> None:
         pass  # trend charts are a bonus visualization; never block the core analysis on them
 
 
+def _ratio_cell_class(key: str, value) -> str:
+    """Color-code only genuinely direction-unambiguous metrics (margins,
+    YoY growth) green/red by sign -- deliberately NOT leverage/liquidity
+    ratios, where "good" depends on the business (e.g. banks run high
+    leverage by design; a red tint on that would be actively misleading,
+    not helpful -- the reasoning-quality audit on this pipeline flagged
+    exactly this as a real gap, so the UI shouldn't repeat it)."""
+    if not isinstance(value, (int, float)):
+        return ""
+    if "margin" in key or "yoy" in key:
+        return "cell-pos" if value >= 0 else "cell-neg"
+    return ""
+
+
 def render_ratio_breakdown(bundle: Bundle) -> None:
     with st.expander(f"{bundle.ticker} — full computed ratio breakdown", expanded=False):
         for section, values in bundle.computed.items():
             if section == "data_gaps":
                 continue
             st.markdown(f"**{section.replace('_', ' ').title()}**")
-            st.table({k.replace("_", " "): fmt_ratio(k, v) for k, v in values.items()})
+            rows = "".join(
+                f'<tr><td class="ratio-label">{k.replace("_", " ")}</td>'
+                f'<td class="ratio-value {_ratio_cell_class(k, v)}">{fmt_ratio(k, v)}</td></tr>'
+                for k, v in values.items()
+            )
+            st.markdown(f'<table class="ratio-table">{rows}</table>', unsafe_allow_html=True)
         if bundle.computed.get("data_gaps"):
             st.markdown(
                 f'<div class="gap-note">Not tagged in this filing\'s XBRL data (reported as unavailable, '
@@ -483,6 +589,7 @@ def render_steps(bundle: Bundle) -> None:
 
 def render_single(bundle: Bundle) -> None:
     render_company_card(bundle)
+    render_market_snapshot(bundle)
     render_kpis(bundle)
     render_charts(bundle)
     render_ratio_breakdown(bundle)
@@ -577,8 +684,10 @@ def render_compare(b1: "Bundle | None", b2: "Bundle | None") -> None:
     left, right = st.columns(2, gap="large")
     with left:
         render_company_card(b1)
+        render_market_snapshot(b1)
     with right:
         render_company_card(b2)
+        render_market_snapshot(b2)
 
     st.subheader("Key Metrics — Head to Head")
     render_kpi_comparison(b1, b2)
