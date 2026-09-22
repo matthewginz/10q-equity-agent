@@ -1,0 +1,11 @@
+{
+ "filings_in_window": 389,
+ "filings_done": 2,
+ "filed_from": "2024-07-01",
+ "horizon_days": 90,
+ "models": [
+  "gemma-4-26b-a4b-it"
+ ],
+ "tickers": 66,
+ "updated": "2026-09-22T18:54"
+}

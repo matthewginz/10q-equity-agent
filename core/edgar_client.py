@@ -15,6 +15,7 @@ See https://www.sec.gov/os/webmaster-faq#developers
 
 from __future__ import annotations
 
+import threading
 import time
 from dataclasses import dataclass
 
@@ -34,15 +35,46 @@ _MIN_REQUEST_GAP_SECONDS = 0.3
 _last_request_ts = 0.0
 
 
-def _get(url: str) -> dict:
+_RETRY_BACKOFF_SECONDS = (2, 5, 15)   # found live: brief DNS drop-outs mid-backtest
+_RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+
+
+# DNS drop-outs and connections reset mid-download (large companyfacts
+# JSON) both seen live during a long backtest.
+_TRANSIENT_ERRORS = (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError)
+
+
+_gap_lock = threading.Lock()   # the backtest calls EDGAR from several threads
+
+
+def _get_once(url: str, timeout: int) -> requests.Response:
     global _last_request_ts
-    wait = _MIN_REQUEST_GAP_SECONDS - (time.monotonic() - _last_request_ts)
-    if wait > 0:
-        time.sleep(wait)
-    resp = requests.get(url, headers=_HEADERS, timeout=15)
-    _last_request_ts = time.monotonic()
-    resp.raise_for_status()
-    return resp.json()
+    with _gap_lock:
+        wait = _MIN_REQUEST_GAP_SECONDS - (time.monotonic() - _last_request_ts)
+        if wait > 0:
+            time.sleep(wait)
+        _last_request_ts = time.monotonic()
+    return requests.get(url, headers=_HEADERS, timeout=timeout)
+
+
+def _get_response(url: str, timeout: int = 15) -> requests.Response:
+    """GET with retry + backoff on transient network failures and SEC
+    throttling (429/5xx). A 404 or other client error raises at once."""
+    for delay in (*_RETRY_BACKOFF_SECONDS, None):
+        try:
+            resp = _get_once(url, timeout)
+            if resp.status_code not in _RETRYABLE_STATUS or delay is None:
+                resp.raise_for_status()
+                return resp
+        except _TRANSIENT_ERRORS:
+            if delay is None:
+                raise
+        time.sleep(delay)
+    raise AssertionError("unreachable")
+
+
+def _get(url: str) -> dict:
+    return _get_response(url).json()
 
 
 _ticker_cik_cache: dict[str, int] | None = None
@@ -115,32 +147,50 @@ class FilingRef:
         )
 
 
+_SUBMISSIONS_PAGE_URL = "https://data.sec.gov/submissions/{name}"
+
+
+def _10qs_in(block: dict, company_name: str, cik: int) -> list[FilingRef]:
+    return [
+        FilingRef(
+            accession_number=block["accessionNumber"][i],
+            filing_date=block["filingDate"][i],
+            report_date=block["reportDate"][i],
+            primary_document=block["primaryDocument"][i],
+            company_name=company_name,
+            cik=cik,
+        )
+        for i, form in enumerate(block["form"])
+        if form == "10-Q"
+    ]
+
+
+def list_10qs(ticker: str, count: int) -> list[FilingRef]:
+    """Up to `count` most recent 10-Qs, newest first. The submissions
+    endpoint's `recent` block holds only ~1,000 filings -- found live: for
+    heavy filers (GS, JPM, MS, BAC file thousands of prospectus supplements)
+    that's just the last 3 10-Qs, so older ones are paged in from the
+    overflow files listed under filings.files until `count` is reached."""
+    cik = ticker_to_cik(ticker)
+    if cik is None:
+        return []
+    data = _get(_SUBMISSIONS_URL.format(cik=cik))
+    company_name = data.get("name", ticker.upper())
+    found = _10qs_in(data["filings"]["recent"], company_name, cik)
+    for page in data["filings"].get("files", []):
+        if len(found) >= count:
+            break
+        found += _10qs_in(_get(_SUBMISSIONS_PAGE_URL.format(name=page["name"])), company_name, cik)
+    return sorted(found, key=lambda f: f.filing_date, reverse=True)[:count]
+
+
 def nth_recent_10q(ticker: str, n: int = 0) -> FilingRef | None:
     """The nth-most-recent 10-Q for this ticker (n=0 is the latest). Exists
     so the backtest harness can deliberately pull an OLDER filing -- the
     latest one has no future to check a stance against yet, so "most
     recent" alone can't be backtested."""
-    cik = ticker_to_cik(ticker)
-    if cik is None:
-        return None
-    data = _get(_SUBMISSIONS_URL.format(cik=cik))
-    company_name = data.get("name", ticker.upper())
-    recent = data["filings"]["recent"]
-    seen = 0
-    for i, form in enumerate(recent["form"]):
-        if form != "10-Q":
-            continue
-        if seen == n:
-            return FilingRef(
-                accession_number=recent["accessionNumber"][i],
-                filing_date=recent["filingDate"][i],
-                report_date=recent["reportDate"][i],
-                primary_document=recent["primaryDocument"][i],
-                company_name=company_name,
-                cik=cik,
-            )
-        seen += 1
-    return None
+    filings = list_10qs(ticker, n + 1)
+    return filings[n] if len(filings) > n else None
 
 
 def latest_10q(ticker: str) -> FilingRef | None:
@@ -164,8 +214,7 @@ def fetch_filing_text(filing: FilingRef, max_chars: int = 60_000) -> str:
     section heading rather than trusting any fixed offset to land on it."""
     from bs4 import BeautifulSoup
 
-    resp = requests.get(filing.document_url, headers=_HEADERS, timeout=20)
-    resp.raise_for_status()
+    resp = _get_response(filing.document_url, timeout=20)
     # requests' charset auto-detection mis-guessed this as non-UTF-8 in
     # testing, mangling curly apostrophes ("Management's" -> "Management�s")
     # and breaking the exact-phrase anchor search below. SEC filings are

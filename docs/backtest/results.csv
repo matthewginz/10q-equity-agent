@@ -1,21 +1,4 @@
-ticker,company,filing_date,report_date,stance,actual_return_pct,hit
-AAPL,Apple Inc.,2026-01-30,2025-12-27,Bullish,4.67,True
-MSFT,MICROSOFT CORP,2025-10-29,2025-09-30,Bullish,-11.09,False
-GOOGL,Alphabet Inc.,2025-10-30,2025-09-30,Bullish,19.45,True
-AMZN,AMAZON COM INC,2025-10-31,2025-09-30,Bullish,-1.02,False
-META,"Meta Platforms, Inc.",2025-10-30,2025-09-30,Bullish,0.42,True
-JPM,JPMORGAN CHASE & CO,2025-11-04,2025-09-30,Bullish,0.09,True
-BAC,BANK OF AMERICA CORP /DE/,2025-10-31,2025-09-30,Bullish,-0.18,False
-GS,GOLDMAN SACHS GROUP INC,2025-10-31,2025-09-30,Bullish,19.69,True
-JNJ,JOHNSON & JOHNSON,2025-10-22,2025-09-28,Neutral,13.82,
-PFE,PFIZER INC,2025-11-04,2025-09-28,Neutral,13.51,
-UNH,UNITEDHEALTH GROUP INC,2025-10-28,2025-09-30,Bearish,-3.76,True
-CVX,CHEVRON CORP,2025-11-06,2025-09-30,Neutral,19.82,
-HD,"HOME DEPOT, INC.",2025-11-25,2025-11-02,Neutral,8.08,
-MCD,MCDONALDS CORP,2025-11-05,2025-09-30,Neutral,5.15,
-NKE,"NIKE, Inc.",2025-10-01,2025-08-31,Bearish,-17.01,True
-CAT,CATERPILLAR INC,2025-11-03,2025-09-30,Neutral,21.37,
-BA,BOEING CO,2025-10-29,2025-09-30,Bearish,14.51,False
-GE,GENERAL ELECTRIC CO,2025-10-21,2025-09-30,Neutral,1.98,
-DIS,Walt Disney Co,2026-02-02,2025-12-27,Bearish,-3.01,True
-T,AT&T INC.,2025-10-31,2025-09-30,Neutral,2.73,
+ticker,company,filing_date,report_date,stance,actual_return_pct,spy_return_pct,excess_return_pct,hit,hit_vs_market,models
+PLD,"Prologis, Inc.",2025-07-30,2025-06-30,Neutral,16.92,8.59,8.32,,,gemini-3.6-flash
+INTC,INTEL CORP,2026-04-24,2026-03-28,Bearish,21.43,3.66,17.77,False,False,gemma-4-26b-a4b-it
+SBUX,STARBUCKS CORP,2026-04-28,2026-03-29,Neutral,7.17,4.12,3.06,,,gemma-4-26b-a4b-it

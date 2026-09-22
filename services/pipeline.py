@@ -62,6 +62,7 @@ def _fmt_ratios(ratios: dict) -> str:
 def run_analysis(
     company: str, ticker: str, report_date: str, ratios: dict, filing_text: str,
     market: MarketSnapshot | None = None, on_step=None, on_step_done=None,
+    as_of_date: str | None = None,
 ) -> AnalysisRun:
     """on_step(step_number, title), called just before each step runs, and
     on_step_done(step_number, title, output), called right after -- together
@@ -74,6 +75,12 @@ def run_analysis(
     if on_step_done is None:
         on_step_done = lambda *_: None
     run = AnalysisRun(company=company, ticker=ticker, report_date=report_date)
+    # Backtests pass the filing date so the model reasons as of then, not with
+    # hindsight from its training data. The live app leaves it None (today).
+    system = _FMT_SYSTEM if as_of_date is None else (
+        f"{_FMT_SYSTEM} Today's date is {as_of_date}. Reason only from the information provided and "
+        "what was knowable on that date -- never mention or rely on any event, price, or result after it."
+    )
     ratio_block = _fmt_ratios(ratios)
     # edgar_client.fetch_filing_text already returns plain text anchored on
     # the MD&A section heading (not raw HTML from a fixed byte offset), so
@@ -83,7 +90,7 @@ def run_analysis(
     # Step 1 -- quantitative snapshot from the real, structured ratios.
     on_step(1, "Quantitative Snapshot")
     s1 = generate(
-        system=_FMT_SYSTEM,
+        system=system,
         user=(
             f"Company: {company} ({ticker}), 10-Q for period ending {report_date}.\n\n"
             f"Computed financial ratios (from this filing's actual SEC XBRL data):\n{ratio_block}\n\n"
@@ -99,7 +106,7 @@ def run_analysis(
     # Step 2 -- MD&A / risk-factor synthesis from the real filing text.
     on_step(2, "Risk & MD&A Synthesis")
     s2 = generate(
-        system=_FMT_SYSTEM,
+        system=system,
         user=(
             f"Below is an excerpt of {company}'s actual 10-Q filing text (HTML, may include markup noise "
             f"-- read through it for the MD&A and Risk Factors content):\n\n{filing_excerpt}\n\n"
@@ -120,7 +127,7 @@ def run_analysis(
     # point to beyond "the numbers don't line up."
     on_step(3, "Segment & Forward-Looking Detail")
     s3 = generate(
-        system=_FMT_SYSTEM,
+        system=system,
         user=(
             f"Below is the same excerpt of {company}'s 10-Q filing text used in the prior step:\n\n{filing_excerpt}\n\n"
             "Extract only what the filing ACTUALLY discloses -- never estimate or infer a figure it doesn't state:\n"
@@ -141,7 +148,7 @@ def run_analysis(
     # Step 4 -- consistency check: does the qualitative story match the numbers?
     on_step(4, "Narrative-vs-Numbers Consistency Check")
     s4 = generate(
-        system=_FMT_SYSTEM,
+        system=system,
         user=(
             f"Quantitative snapshot (step 1):\n{s1}\n\n"
             f"Risk/MD&A synthesis (step 2):\n{s2}\n\n"
@@ -159,7 +166,7 @@ def run_analysis(
     # Step 5 -- capital allocation / sustainability read.
     on_step(5, "Capital Allocation & Sustainability")
     s5 = generate(
-        system=_FMT_SYSTEM,
+        system=system,
         user=(
             f"Quantitative snapshot:\n{s1}\n\n"
             "Focusing only on cash flow, capex, and leverage figures in that snapshot: assess whether "
@@ -185,7 +192,7 @@ def run_analysis(
     on_step(6, "Final Equity Stance")
     market_block = format_market_snapshot(market)
     s6 = generate(
-        system=_FMT_SYSTEM,
+        system=system,
         user=(
             f"You have five prior analysis steps for {company} ({ticker}):\n\n"
             f"1) Quantitative snapshot:\n{s1}\n\n"

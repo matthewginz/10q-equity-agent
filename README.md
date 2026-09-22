@@ -40,28 +40,34 @@ app.py                  ── Streamlit router: views/analyze.py (live analysis
 
 ## Track record
 
-The app's **Track Record** page shows how the agent's calls held up. The
-backtest covers 20 large-caps, one 10-Q each (filed Oct 2025 – Feb 2026),
-and each run uses only the data available on that filing's date. Every call
-is scored two ways:
+The app's **Track Record** page scores the agent's calls at scale. The universe
+is a fixed list of 66 large caps across 11 sectors, chosen before any results
+existed. Every 10-Q they filed from July 2024 onward is a test case (~390
+filings across ~7 quarters). For each one:
 
-- **Against the stock's actual 90-day move.** The agent's Bullish/Bearish
-  calls were right 8 of 12 times.
-- **Against Wall Street consensus on the same date.** The consensus is
-  rebuilt from dated analyst ratings (`core/analyst_consensus.py`). The
-  agent agreed with the Street on 7 of 18 filings (2 had no rating history).
-  When it made a different directional call, it was right 4 of 5 times.
-  When it stayed Neutral on names the Street rated Buy, the Street was right
-  6 of 6 times.
+- the pipeline sees only the XBRL facts and price available on the filing
+  date, and is told that date is "today"
+- one Gemini model answers every step of that filing. Five free-tier flash
+  models share the work, and each row records which model answered
+- the call is scored against the stock's 90-day return, both raw and minus
+  the S&P 500 (SPY), and against Wall Street's consensus on the same date,
+  rebuilt from dated analyst ratings (`core/analyst_consensus.py`)
 
-This is a small, single-quarter sample in a mostly rising market, so none of
-these numbers show real predictive power.
+Every hit rate is shown with a 95% Wilson interval and an exact binomial test
+against a coin flip (`core/stats.py`). There are also breakdowns by quarter
+and by model, to catch an edge that only shows up in one of them.
+
+Gemini's free tier caps each model at 20 requests/day (6 per filing), so the
+run is resumable: filings go in a fixed random order, results save after
+every filing, and a daily scheduled task (`scripts/run_backtest_daily.bat`)
+picks up where the last run stopped.
 
 ```bash
 pip install -r requirements-backtest.txt
-python scripts/backtest_accuracy.py      # LLM runs -> docs/backtest/results.csv
-python scripts/analyst_comparison.py     # no LLM -> docs/backtest/analyst_comparison.csv
-python -m pytest tests                   # consensus logic unit tests
+python scripts/backtest_accuracy.py --limit 1   # smoke test one filing
+python scripts/backtest_accuracy.py             # as many as today's quota allows (resumable)
+python scripts/analyst_comparison.py            # no LLM -> docs/backtest/analyst_comparison.csv
+python -m pytest tests
 ```
 
 ### A few things worth knowing about how this actually works

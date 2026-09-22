@@ -30,6 +30,7 @@ from core._net import ensure_curl_cffi_ca_bundle
 
 ensure_curl_cffi_ca_bundle()
 
+import pandas as pd
 import yfinance as yf
 
 from core import market_data
@@ -57,9 +58,13 @@ class ComparisonRow:
     mean_price_target: float | None
     implied_upside_pct: float | None
     actual_return_pct: float | None
+    excess_return_pct: float | None  # vs SPY over the same window
     agent_hit: bool | None
     street_hit: bool | None
+    agent_hit_vs_market: bool | None
+    street_hit_vs_market: bool | None
     agrees: bool | None  # None = no usable Street consensus to compare against
+    model: str
 
 
 def directional_hit(stance: str, return_pct: float | None) -> bool | None:
@@ -72,12 +77,22 @@ def _float_or_none(value: str) -> float | None:
     return float(value) if value not in ("", None) else None
 
 
+_ratings_cache: dict[str, pd.DataFrame] = {}
+
+
+def _ratings(ticker: str) -> pd.DataFrame:
+    """One rating-history download per ticker, reused across its filings.
+    An empty frame (no history) becomes an 'Insufficient' consensus row
+    rather than dropping the filing from the comparison."""
+    if ticker not in _ratings_cache:
+        ratings = yf.Ticker(ticker).upgrades_downgrades
+        _ratings_cache[ticker] = ratings if ratings is not None else pd.DataFrame()
+    return _ratings_cache[ticker]
+
+
 def compare_row(result: dict) -> ComparisonRow:
     ticker, filing_date = result["ticker"], result["filing_date"]
-    ratings = yf.Ticker(ticker).upgrades_downgrades
-    if ratings is None or ratings.empty:
-        raise RuntimeError("no analyst rating history returned")
-    snap = consensus_as_of(ratings, filing_date)
+    snap = consensus_as_of(_ratings(ticker), filing_date)
     market = market_data.fetch_market_snapshot(ticker, as_of_date=filing_date)
     price = market.price if market else None
     upside = (
@@ -85,6 +100,7 @@ def compare_row(result: dict) -> ComparisonRow:
         if price and snap.mean_price_target else None
     )
     actual = _float_or_none(result["actual_return_pct"])
+    excess = _float_or_none(result.get("excess_return_pct", ""))
     return ComparisonRow(
         ticker=ticker, company=result["company"], filing_date=filing_date,
         agent_stance=result["stance"], street_stance=snap.stance,
@@ -94,9 +110,13 @@ def compare_row(result: dict) -> ComparisonRow:
         mean_price_target=snap.mean_price_target,
         implied_upside_pct=upside,
         actual_return_pct=actual,
+        excess_return_pct=excess,
         agent_hit=directional_hit(result["stance"], actual),
         street_hit=directional_hit(snap.stance, actual),
+        agent_hit_vs_market=directional_hit(result["stance"], excess),
+        street_hit_vs_market=directional_hit(snap.stance, excess),
         agrees=None if snap.stance == "Insufficient" else result["stance"] == snap.stance,
+        model=result.get("models", ""),
     )
 
 
@@ -129,7 +149,9 @@ def summarize(rows: list[ComparisonRow]) -> None:
 
 def main(tickers: list[str] | None) -> None:
     with RESULTS_CSV.open(newline="", encoding="utf-8") as f:
-        results = [r for r in csv.DictReader(f) if not tickers or r["ticker"] in tickers]
+        # Only rows from the current harness (model recorded, one model per filing).
+        results = [r for r in csv.DictReader(f)
+                   if r.get("models") and (not tickers or r["ticker"] in tickers)]
 
     rows: list[ComparisonRow] = []
     for result in results:

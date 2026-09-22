@@ -1,21 +1,4 @@
-ticker,company,filing_date,agent_stance,street_stance,n_firms,n_buy,n_hold,n_sell,street_score,price_at_filing,mean_price_target,implied_upside_pct,actual_return_pct,agent_hit,street_hit,agrees
-AAPL,Apple Inc.,2026-01-30,Bullish,Bullish,27,18,7,2,0.593,258.78,292.86,13.17,4.67,True,True,True
-MSFT,MICROSOFT CORP,2025-10-29,Bullish,Bullish,31,30,1,0,0.968,537.13,613.6,14.24,-11.09,False,False,True
-GOOGL,Alphabet Inc.,2025-10-30,Bullish,Bullish,40,32,8,0,0.8,280.75,251.82,-10.3,19.45,True,True,True
-AMZN,AMAZON COM INC,2025-10-31,Bullish,Bullish,44,44,0,0,1.0,244.22,265.93,8.89,-1.02,False,False,True
-META,"Meta Platforms, Inc.",2025-10-30,Bullish,Insufficient,0,0,0,0,,664.22,,,0.42,True,,
-JPM,JPMORGAN CHASE & CO,2025-11-04,Bullish,Bullish,15,9,6,0,0.6,304.92,320.64,5.16,0.09,True,True,True
-BAC,BANK OF AMERICA CORP /DE/,2025-10-31,Bullish,Bullish,17,14,3,0,0.824,52.33,55.76,6.55,-0.18,False,False,True
-GS,GOLDMAN SACHS GROUP INC,2025-10-31,Bullish,Neutral,14,3,10,1,0.143,774.14,763.0,-1.44,19.69,True,,False
-JNJ,JOHNSON & JOHNSON,2025-10-22,Neutral,Bullish,15,8,7,0,0.533,188.69,196.6,4.19,13.82,,True,False
-PFE,PFIZER INC,2025-11-04,Neutral,Neutral,9,2,6,1,0.111,22.71,27.38,20.58,13.51,,,True
-UNH,UNITEDHEALTH GROUP INC,2025-10-28,Bearish,Bullish,24,19,3,2,0.708,358.3,388.48,8.42,-3.76,True,False,False
-CVX,CHEVRON CORP,2025-11-06,Neutral,Bullish,15,9,5,1,0.533,147.14,169.87,15.45,19.82,,True,False
-HD,"HOME DEPOT, INC.",2025-11-25,Neutral,Bullish,21,18,3,0,0.857,341.4,421.81,23.55,8.08,,True,False
-MCD,MCDONALDS CORP,2025-11-05,Neutral,Bullish,24,10,13,1,0.375,298.01,326.36,9.51,5.15,,True,False
-NKE,"NIKE, Inc.",2025-10-01,Bearish,Bullish,24,16,8,0,0.667,71.83,81.7,13.74,-17.01,True,False,False
-CAT,CATERPILLAR INC,2025-11-03,Neutral,Insufficient,0,0,0,0,,567.12,,,21.37,,,
-BA,BOEING CO,2025-10-29,Bearish,Bullish,17,15,1,1,0.824,213.58,242.35,13.47,14.51,False,True,False
-GE,GENERAL ELECTRIC CO,2025-10-21,Neutral,Bullish,8,8,0,0,1.0,305.45,264.38,-13.45,1.98,,True,False
-DIS,Walt Disney Co,2026-02-02,Bearish,Bullish,14,14,0,0,1.0,103.66,136.0,31.2,-3.01,True,False,False
-T,AT&T INC.,2025-10-31,Neutral,Bullish,17,12,5,0,0.706,23.89,30.69,28.46,2.73,,True,False
+ticker,company,filing_date,agent_stance,street_stance,n_firms,n_buy,n_hold,n_sell,street_score,price_at_filing,mean_price_target,implied_upside_pct,actual_return_pct,excess_return_pct,agent_hit,street_hit,agent_hit_vs_market,street_hit_vs_market,agrees,model
+PLD,"Prologis, Inc.",2025-07-30,Neutral,Bullish,17,8,7,2,0.353,104.26,119.87,14.97,16.92,8.32,,True,,True,False,gemini-3.6-flash
+INTC,INTEL CORP,2026-04-24,Bearish,Neutral,31,6,22,3,0.097,82.54,49.67,-39.82,21.43,17.77,False,,False,,False,gemma-4-26b-a4b-it
+SBUX,STARBUCKS CORP,2026-04-28,Neutral,Bullish,27,16,11,0,0.593,96.16,102.0,6.07,7.17,3.06,,True,,True,False,gemma-4-26b-a4b-it

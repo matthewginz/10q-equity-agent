@@ -78,6 +78,8 @@ def consensus_as_of(ratings: pd.DataFrame, as_of_date: str,
     network -- so it's unit-testable against a synthetic frame."""
     cutoff = datetime.fromisoformat(as_of_date)
     window_start = cutoff - timedelta(days=lookback_days)
+    if ratings.empty or "Firm" not in ratings.columns:
+        return ConsensusSnapshot(as_of_date, 0, 0, 0, 0, 0, None, "Insufficient", None)
 
     frame = ratings
     if isinstance(frame.index, pd.DatetimeIndex) and frame.index.tz is not None:

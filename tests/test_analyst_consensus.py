@@ -70,6 +70,12 @@ def test_unmapped_grades_are_counted_not_guessed():
     assert snap.n_firms == 1
 
 
+def test_no_rating_history_is_insufficient_not_an_error():
+    snap = consensus_as_of(pd.DataFrame(), "2025-07-01")
+    assert snap.stance == "Insufficient"
+    assert snap.n_firms == 0
+
+
 def test_stance_thresholds():
     assert stance_from_score(0.5, 10) == "Bullish"
     assert stance_from_score(0.2, 10) == "Neutral"
