@@ -34,7 +34,34 @@ services/pipeline.py    ── 5 sequential LLM steps, each grounded in the
     │                       previous steps' real output, not 5 independent
     │                       prompts against the same raw context
     ▼
-app.py                  ── Streamlit UI
+app.py                  ── Streamlit router: views/analyze.py (live analysis)
+                           + views/track_record.py (backtest results)
+```
+
+## Track record
+
+The app's **Track Record** page shows how the agent's calls held up. The
+backtest covers 20 large-caps, one 10-Q each (filed Oct 2025 – Feb 2026),
+and each run uses only the data available on that filing's date. Every call
+is scored two ways:
+
+- **Against the stock's actual 90-day move.** The agent's Bullish/Bearish
+  calls were right 8 of 12 times.
+- **Against Wall Street consensus on the same date.** The consensus is
+  rebuilt from dated analyst ratings (`core/analyst_consensus.py`). The
+  agent agreed with the Street on 7 of 18 filings (2 had no rating history).
+  When it made a different directional call, it was right 4 of 5 times.
+  When it stayed Neutral on names the Street rated Buy, the Street was right
+  6 of 6 times.
+
+This is a small, single-quarter sample in a mostly rising market, so none of
+these numbers show real predictive power.
+
+```bash
+pip install -r requirements-backtest.txt
+python scripts/backtest_accuracy.py      # LLM runs -> docs/backtest/results.csv
+python scripts/analyst_comparison.py     # no LLM -> docs/backtest/analyst_comparison.csv
+python -m pytest tests                   # consensus logic unit tests
 ```
 
 ### A few things worth knowing about how this actually works

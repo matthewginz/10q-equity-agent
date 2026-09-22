@@ -185,14 +185,39 @@ def run(tickers: list[str]) -> list[BacktestRow]:
             raw_log.append(log_entry)
         time.sleep(INTER_TICKER_DELAY_SECONDS)
 
-    (OUT_DIR / "raw_runs.json").write_text(json.dumps(raw_log, indent=2), encoding="utf-8")
-    if rows:
-        with (OUT_DIR / "results.csv").open("w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=list(asdict(rows[0]).keys()))
-            writer.writeheader()
-            for r in rows:
-                writer.writerow(asdict(r))
+    _merge_write_raw_log(raw_log)
+    _merge_write_results(rows)
     return rows
+
+
+def _merge_write_raw_log(new_entries: list[dict]) -> None:
+    """Upsert by ticker instead of overwriting -- a `--tickers BA` smoke
+    test previously replaced the whole 20-ticker results file with one row."""
+    path = OUT_DIR / "raw_runs.json"
+    existing = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    replaced = {e["ticker"] for e in new_entries}
+    merged = [e for e in existing if e["ticker"] not in replaced] + new_entries
+    path.write_text(json.dumps(merged, indent=2), encoding="utf-8")
+
+
+def _merge_write_results(new_rows: list[BacktestRow]) -> None:
+    """Same upsert-by-ticker rule as the raw log, preserving the original
+    sample order so a partial rerun doesn't reshuffle the file."""
+    if not new_rows:
+        return
+    path = OUT_DIR / "results.csv"
+    fieldnames = list(asdict(new_rows[0]).keys())
+    by_ticker: dict[str, dict] = {}
+    if path.exists():
+        with path.open(newline="", encoding="utf-8") as f:
+            by_ticker = {r["ticker"]: r for r in csv.DictReader(f)}
+    by_ticker = {**by_ticker, **{r.ticker: asdict(r) for r in new_rows}}
+    order = {t: i for i, t in enumerate(TICKERS)}
+    ordered = sorted(by_ticker.values(), key=lambda r: order.get(r["ticker"], len(order)))
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(ordered)
 
 
 def summarize(rows: list[BacktestRow]) -> None:
