@@ -1,11 +1,16 @@
 {
  "filings_in_window": 389,
- "filings_done": 2,
+ "filings_done": 26,
  "filed_from": "2024-07-01",
  "horizon_days": 90,
  "models": [
+  "gemini-3.8-flash",
+  "gemini-3.7-flash",
+  "gemini-3.6-flash",
+  "gemini-3.5-flash",
+  "gemini-3-flash-preview",
   "gemma-4-26b-a4b-it"
  ],
  "tickers": 66,
- "updated": "2026-09-22T18:54"
+ "updated": "2026-09-22T21:01"
 }

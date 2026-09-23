@@ -1,4 +1,27 @@
 ticker,company,filing_date,report_date,stance,actual_return_pct,spy_return_pct,excess_return_pct,hit,hit_vs_market,models
+LIN,LINDE PLC,2024-08-02,2024-06-30,Bullish,0.77,7.03,-6.26,True,False,gemma-4-26b-a4b-it
+DE,DEERE & CO,2024-08-29,2024-07-28,Neutral,22.48,7.58,14.9,,,gemma-4-26b-a4b-it
+TGT,TARGET CORP,2024-08-30,2024-08-03,Bullish,-13.25,7.22,-20.47,False,False,gemma-4-26b-a4b-it
+JNJ,JOHNSON & JOHNSON,2024-10-23,2024-09-29,Neutral,-9.96,4.69,-14.65,,,gemma-4-26b-a4b-it
+KO,COCA COLA CO,2024-10-24,2024-09-27,Bearish,-7.51,5.05,-12.55,True,True,gemma-4-26b-a4b-it
+PLD,"Prologis, Inc.",2024-10-25,2024-09-30,Bullish,1.73,5.66,-3.93,True,False,gemma-4-26b-a4b-it
+MSFT,MICROSOFT CORP,2024-10-30,2024-09-30,Bullish,3.6,4.58,-0.98,True,False,gemma-4-26b-a4b-it
+MS,MORGAN STANLEY,2024-11-04,2024-09-30,Bullish,18.88,5.26,13.62,True,True,gemma-4-26b-a4b-it
+PG,PROCTER & GAMBLE Co,2025-01-22,2024-12-31,Neutral,3.17,-12.8,15.96,,,gemma-4-26b-a4b-it
+AAPL,Apple Inc.,2025-01-31,2024-12-28,Bullish,-9.51,-6.92,-2.59,False,False,gemma-4-26b-a4b-it
+ORCL,ORACLE CORP,2025-03-11,2025-02-28,Bearish,23.31,8.2,15.11,False,False,gemma-4-26b-a4b-it
+T,AT&T INC.,2025-04-29,2025-03-31,Neutral,2.11,15.24,-13.14,,,gemma-4-26b-a4b-it
 PLD,"Prologis, Inc.",2025-07-30,2025-06-30,Neutral,16.92,8.59,8.32,,,gemini-3.6-flash
+SO,SOUTHERN CO,2025-07-31,2025-06-30,Neutral,-0.24,9.05,-9.29,,,gemma-4-26b-a4b-it
+CRM,"Salesforce, Inc.",2025-09-04,2025-07-31,Bullish,-2.0,5.65,-7.65,False,False,gemma-4-26b-a4b-it
+HON,HONEYWELL INTERNATIONAL INC,2025-10-23,2025-09-30,Bullish,6.01,2.33,3.68,True,True,gemma-4-26b-a4b-it
+F,FORD MOTOR CO,2025-10-24,2025-09-30,Neutral,0.21,2.03,-1.83,,,gemma-4-26b-a4b-it
 INTC,INTEL CORP,2026-04-24,2026-03-28,Bearish,21.43,3.66,17.77,False,False,gemma-4-26b-a4b-it
+PG,PROCTER & GAMBLE Co,2026-04-24,2026-03-31,Neutral,-0.82,3.66,-4.48,,,gemma-4-26b-a4b-it
+AMT,AMERICAN TOWER CORP /MA/,2026-04-28,2026-03-31,Neutral,-5.64,4.12,-9.76,,,gemma-4-26b-a4b-it
 SBUX,STARBUCKS CORP,2026-04-28,2026-03-29,Neutral,7.17,4.12,3.06,,,gemma-4-26b-a4b-it
+SO,SOUTHERN CO,2026-04-30,2026-03-31,Bearish,0.15,1.76,-1.61,False,True,gemma-4-26b-a4b-it
+LIN,LINDE PLC,2026-05-01,2026-03-31,Bullish,0.46,3.18,-2.73,True,False,gemma-4-26b-a4b-it
+CVX,CHEVRON CORP,2026-05-07,2026-03-31,Neutral,3.08,5.49,-2.42,,,gemma-4-26b-a4b-it
+MCD,MCDONALDS CORP,2026-05-07,2026-03-31,Bearish,-2.76,5.49,-8.26,True,True,gemma-4-26b-a4b-it
+ADBE,ADOBE INC.,2026-06-15,2026-05-29,Bearish,28.71,1.06,27.65,False,False,gemma-4-26b-a4b-it
