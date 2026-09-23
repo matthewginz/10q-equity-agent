@@ -14,7 +14,7 @@ Deploy free:   https://share.streamlit.io, pointed at this repo, app.py as
 """
 
 import hashlib
-from dataclasses import dataclass
+import math
 
 import pandas as pd
 import requests
@@ -22,8 +22,9 @@ import streamlit as st
 from google.genai.errors import ClientError, ServerError
 from streamlit_searchbox import st_searchbox
 
-from core import edgar_client, market_data, ratios as ratios_mod
-from services.pipeline import AnalysisRun, compare_stances, run_analysis
+from core import edgar_client, ratios as ratios_mod
+from services.pipeline import compare_stances
+from ui.live_run import Bundle, escape_markdown_math, run_with_progress
 
 # ── Styling ──────────────────────────────────────────────────────────────
 st.markdown(
@@ -313,15 +314,6 @@ run_clicked = st.button(
 STANCE_CLASS = {"BULLISH": "stance-bullish", "BEARISH": "stance-bearish"}
 
 
-def escape_markdown_math(text: str) -> str:
-    """Found live: the LLM's own prose routinely writes two dollar amounts in
-    one sentence ('$34.37 billion... $2.46 billion'), and Streamlit's
-    markdown renders a paired '$...$' as inline LaTeX math, silently eating
-    the text between them. Escaping every literal '$' turns off math mode
-    without changing anything the reader sees."""
-    return text.replace("$", "\\$")
-
-
 def stance_badge(text: str) -> str:
     # Found live: scanning the FULL multi-paragraph recommendation let a
     # later hedging phrase ("...rather than a fully bullish read") override
@@ -355,115 +347,6 @@ def fmt_ratio(key: str, value) -> str:
     return str(value)
 
 
-@dataclass
-class Bundle:
-    ticker: str
-    filing: object
-    facts_json: dict
-    computed: dict
-    run: AnalysisRun
-    market: "market_data.MarketSnapshot | None"
-
-
-def fetch_and_analyze(ticker: str) -> "Bundle | None":
-    """Fetch, compute, and run the pipeline for one ticker -- everything up
-    to but NOT including rendering. Kept separate from rendering (below) so
-    compare mode can bring both tickers to full completion first, then draw
-    every section as one aligned row shared by both sides, instead of the
-    old approach of running each ticker's entire fetch-render flow straight
-    through in its own column. That's what caused the misalignment: two
-    independently-flowing columns drift apart the moment one side's content
-    (a longer company name, a longer stance paragraph) is taller than the
-    other's, and every section below the drift inherits the offset. A
-    shared row for each section can't drift, because both sides are built
-    from the same Streamlit columns() call for that row alone."""
-    try:
-        with st.spinner(f"Looking up {ticker} on SEC EDGAR..."):
-            filing = edgar_client.latest_10q(ticker)
-    except requests.exceptions.RequestException as exc:
-        st.error(f"Couldn't reach SEC EDGAR for {ticker}: {exc}. It may be rate-limiting or temporarily down — try again shortly.")
-        return None
-
-    if filing is None:
-        st.error(
-            f"No 10-Q found for '{ticker}' on SEC EDGAR. Check it's a US-listed filer that reports on Form 10-Q "
-            "(foreign private issuers file 6-K/20-F instead, and won't resolve here)."
-        )
-        return None
-
-    try:
-        with st.spinner(f"Fetching {ticker}'s structured XBRL financials..."):
-            facts_json = edgar_client.company_facts(filing.cik)
-            facts = ratios_mod.extract_facts(facts_json)
-            computed = ratios_mod.compute_ratios(facts)
-    except requests.exceptions.RequestException as exc:
-        st.error(f"Couldn't fetch financial data for {ticker} from SEC EDGAR: {exc}. Try again shortly.")
-        return None
-
-    try:
-        with st.spinner(f"Fetching {ticker}'s filing text for MD&A / risk factors..."):
-            filing_text = edgar_client.fetch_filing_text(filing)
-    except requests.exceptions.RequestException as exc:
-        st.error(f"Couldn't fetch {ticker}'s filing text: {exc}. Try again shortly.")
-        return None
-
-    # Live price/valuation context for the final synthesis step -- best
-    # effort only. A market-data hiccup shouldn't block the whole analysis,
-    # since the pipeline degrades gracefully to fundamentals-only (same
-    # "None means not available, never fabricated" contract as data_gaps).
-    with st.spinner(f"Fetching {ticker}'s current market price..."):
-        try:
-            snapshot = market_data.fetch_market_snapshot(ticker)
-        except Exception:  # noqa: BLE001 -- best-effort; see docstring above
-            snapshot = None
-
-    # ── 6-step pipeline with live progress AND a live recap per step ──
-    run = None
-    try:
-        with st.status(f"Running 6-step research pipeline for {ticker}...", expanded=True) as status:
-            def _on_step(i, title):
-                # expanded=True must be re-asserted on every update() call --
-                # st.status can silently fall back to collapsed otherwise,
-                # which is what was closing the recap after each step.
-                status.update(label=f"{ticker} — Step {i}/6: {title}", expanded=True)
-
-            def _on_step_done(i, title, output):
-                # Used to hard-truncate this to 500 chars -- verified live
-                # against real runs that this silently cut off every step
-                # mid-sentence (confirmed: the "…" landed at ~500 chars into
-                # EVERY step, every run), which is exactly why a risk table
-                # with 3 rows (Risk 2 or 3, e.g. "Management") could render
-                # as if there were nothing there -- the real content existed,
-                # it just never reached the page. Show the full real output.
-                rendered = escape_markdown_math(output)
-                st.markdown(f"**✓ Step {i}/6 — {title}**")
-                st.markdown(f'<div class="step-recap">{rendered}</div>', unsafe_allow_html=True)
-
-            run = run_analysis(
-                filing.company_name, ticker, filing.report_date, computed, filing_text,
-                market=snapshot, on_step=_on_step, on_step_done=_on_step_done,
-            )
-            status.update(label=f"{ticker} analysis complete", state="complete", expanded=True)
-    except RuntimeError as exc:
-        st.error(str(exc))
-        return None
-    except (ClientError, ServerError) as exc:
-        # Every model in the fallback chain rejected the same request --
-        # gemini_client already retries individual models through quota
-        # exhaustion, overload, and transient bad-request errors, so
-        # getting here means it's not one flaky model, it's every one.
-        st.error(
-            f"The free-tier LLM pipeline failed on every fallback model for {ticker}: {exc}. "
-            "Free-tier quota resets daily -- try again later, or try a different ticker "
-            "(a very long or unusual filing can occasionally trip a request-size limit)."
-        )
-        return None
-
-    if run is None:
-        return None
-    return Bundle(ticker=ticker, filing=filing, facts_json=facts_json, computed=computed, run=run, market=snapshot)
-
-
 # ── Render building blocks -- each renders into whatever container is
 #    currently active (the caller opens `with column:` where it matters),
 #    shared verbatim by single-ticker mode and compare mode. ────────────────
@@ -480,13 +363,13 @@ def render_company_card(bundle: Bundle) -> None:
 
 def render_market_snapshot(bundle: Bundle) -> None:
     """The price/valuation context the pipeline's final stance step actually
-    reasons from (services/pipeline.py step 6) -- fetched in fetch_and_analyze
+    reasons from (services/pipeline.py step 6) -- fetched in ui/live_run.py
     but, until this function existed, never shown anywhere in the UI. Best
     effort: renders nothing if the market fetch failed, matching the same
     "None means not available" contract as the rest of this app rather than
     showing a broken or fabricated card."""
     m = bundle.market
-    if m is None:
+    if m is None or not math.isfinite(m.price):   # never render "$nan"
         return
     span = m.fifty_two_week_high - m.fifty_two_week_low
     position_pct = max(0.0, min(100.0, (m.price - m.fifty_two_week_low) / span * 100)) if span > 0 else 50.0
@@ -678,7 +561,7 @@ def render_verdict(b1: Bundle, b2: Bundle) -> None:
 
 def render_compare(b1: "Bundle | None", b2: "Bundle | None") -> None:
     if b1 is None or b2 is None:
-        return  # a fetch/pipeline error for one side was already shown by fetch_and_analyze
+        return  # a fetch/pipeline error for one side was already shown by run_with_progress
     left, right = st.columns(2, gap="large")
     with left:
         render_company_card(b1)
@@ -704,20 +587,39 @@ def render_compare(b1: "Bundle | None", b2: "Bundle | None") -> None:
     left, right = st.columns(2, gap="large")
     with left, st.container(border=True):
         render_stance(b1)
-        st.divider()
-        render_steps(b1)
     with right, st.container(border=True):
         render_stance(b2)
-        st.divider()
-        render_steps(b2)
+    render_steps_side_by_side(b1, b2)
+
+
+def render_steps_side_by_side(b1: Bundle, b2: Bundle) -> None:
+    """One row per pipeline step with both companies in it, so step N of
+    one always lines up with step N of the other (feedback from a real user:
+    the old layout put each company's steps in its own column of tabs, which
+    made comparing the same step across the two awkward)."""
+    st.subheader("Step-by-Step, Side by Side")
+    for i, (s1, s2) in enumerate(zip(b1.run.steps, b2.run.steps)):
+        with st.expander(s1.title, expanded=i == 0):
+            left, right = st.columns(2, gap="large")
+            with left:
+                st.markdown(f"**{b1.ticker}**")
+                st.markdown(escape_markdown_math(s1.output))
+            with right:
+                st.markdown(f"**{b2.ticker}**")
+                st.markdown(escape_markdown_math(s2.output))
 
 
 if run_clicked:
     if compare_mode:
-        b1 = fetch_and_analyze(ticker1)
-        b2 = fetch_and_analyze(ticker2)
-        render_compare(b1, b2)
+        b1, b2 = run_with_progress([ticker1, ticker2])   # both tickers run in parallel
+        if b1 is not None and b2 is not None:
+            render_compare(b1, b2)
+        elif b1 is not None or b2 is not None:
+            # one side failed (its error is already shown) -- don't throw away the other
+            survivor = b1 if b1 is not None else b2
+            st.info(f"Showing {survivor.ticker} on its own, since the other analysis didn't finish.")
+            render_single(survivor)
     else:
-        bundle = fetch_and_analyze(ticker1)
+        (bundle,) = run_with_progress([ticker1])
         if bundle is not None:
             render_single(bundle)

@@ -20,7 +20,12 @@ from core import _net  # noqa: F401 -- must run before any network call, see its
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+import httpx
 from google.genai.errors import ClientError, ServerError
+
+# Found live: a dropped connection mid-call (httpx ReadError, WinError 10053)
+# killed a whole analysis -- network blips get the same treatment as a 503.
+_TRANSIENT = (ServerError, httpx.TransportError)
 
 load_dotenv()
 
@@ -137,8 +142,8 @@ def _call_with_retries(model: str, system: str, user: str, max_output_tokens: in
     for wait in (*SAME_MODEL_RETRY_WAITS, None):
         try:
             return _call_model(model, system, user, max_output_tokens)
-        except (ClientError, ServerError) as exc:
-            retryable = isinstance(exc, ServerError) or getattr(exc, "status", None) == "RESOURCE_EXHAUSTED"
+        except (ClientError, *_TRANSIENT) as exc:
+            retryable = isinstance(exc, _TRANSIENT) or getattr(exc, "status", None) == "RESOURCE_EXHAUSTED"
             if wait is None or not retryable:
                 raise
             time.sleep(wait)
@@ -188,8 +193,8 @@ def generate(system: str, user: str, max_output_tokens: int = 2048) -> str:
             # a blank answer is a failed call, not a result -- try the next model
             last_exc = exc
             continue
-        except ServerError as exc:
-            # transient overload (503), not a quota issue -- worth trying
+        except _TRANSIENT as exc:
+            # transient overload (503) or network blip, not a quota issue -- worth trying
             # the next model rather than failing the whole analysis on one
             # model's momentary bad luck.
             last_exc = exc

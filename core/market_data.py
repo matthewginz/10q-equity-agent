@@ -14,6 +14,7 @@ against for XBRL data.
 
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -21,6 +22,7 @@ from core._net import ensure_curl_cffi_ca_bundle
 
 ensure_curl_cffi_ca_bundle()
 
+import pandas as pd
 import yfinance as yf
 
 
@@ -34,6 +36,11 @@ class MarketSnapshot:
     return_365d_pct: float | None
 
 
+# Found live: concurrent yfinance calls from several threads (the backtest's
+# workers; the app's parallel compare mode) can come back empty. One lock.
+_yf_lock = threading.Lock()
+
+
 def fetch_market_snapshot(ticker: str, as_of_date: str | None = None) -> MarketSnapshot | None:
     """Price context as of as_of_date (a past filing date), or as of now
     when as_of_date is None. None if yfinance has no data in that window
@@ -41,24 +48,38 @@ def fetch_market_snapshot(ticker: str, as_of_date: str | None = None) -> MarketS
     missing snapshot as "no market context available", never fabricate one."""
     as_of = datetime.fromisoformat(as_of_date) if as_of_date else datetime.utcnow()
     window_start = as_of - timedelta(days=370)
-    hist = yf.Ticker(ticker).history(
-        start=window_start.strftime("%Y-%m-%d"),
-        end=(as_of + timedelta(days=1)).strftime("%Y-%m-%d"),
-    )
+    with _yf_lock:
+        hist = yf.Ticker(ticker).history(
+            start=window_start.strftime("%Y-%m-%d"),
+            end=(as_of + timedelta(days=1)).strftime("%Y-%m-%d"),
+        )
     if hist.empty:
         return None
     if hist.index.tz is not None:
         hist.index = hist.index.tz_localize(None)
-    closes = hist["Close"]
+    return snapshot_from_closes(hist["Close"], as_of)
+
+
+def snapshot_from_closes(closes: pd.Series, as_of: datetime) -> MarketSnapshot | None:
+    """Pure part of fetch_market_snapshot, split out to be unit-testable.
+
+    Found live: yfinance returns a row for the current day whose Close is NaN
+    until the session's data settles. Taking closes.iloc[-1] blindly made the
+    "current price" NaN -- the UI rendered "$nan" AND the pipeline's final
+    step was fed "Price: $nan". Blank rows are dropped first; the latest real
+    close is the price."""
+    closes = closes.dropna()
+    closes = closes[closes > 0]
+    if closes.empty:
+        return None
     price = float(closes.iloc[-1])
 
     def _return_over(days: int) -> float | None:
-        target = as_of - timedelta(days=days)
-        earlier = closes.index[closes.index <= target]
+        earlier = closes.index[closes.index <= as_of - timedelta(days=days)]
         if len(earlier) == 0:
             return None
         base = float(closes.loc[earlier[-1]])
-        return (price - base) / base if base else None
+        return (price - base) / base
 
     return MarketSnapshot(
         as_of=closes.index[-1].strftime("%Y-%m-%d"),

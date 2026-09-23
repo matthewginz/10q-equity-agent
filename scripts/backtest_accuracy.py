@@ -161,7 +161,7 @@ def _download_closes(ticker: str) -> pd.Series:
     for wait in (*YF_RETRY_WAITS, None):
         hist = yf.Ticker(ticker).history(start=start, auto_adjust=True)
         if not hist.empty:
-            closes = hist["Close"]
+            closes = hist["Close"].dropna()   # today's in-progress row has a NaN close
             if closes.index.tz is not None:
                 closes.index = closes.index.tz_localize(None)
             return closes
