@@ -399,20 +399,29 @@ def worker(model: str, work: queue.Queue, stats: dict[str, int]) -> None:
                 f"~{work.qsize()} queued)")
 
 
-def select_api_key(require_own_key: bool) -> bool:
-    """Use the backtest's own key when set, so the batch run never spends the
-    live app's free-tier quota. Returns False if the key is required and
-    missing (the scheduled run passes --require-backtest-key)."""
+def models_safe_on_shared_key(models: list[str]) -> list[str]:
+    """Free-tier quota is per model, so on the live app's key the backtest
+    may only use models the app itself never calls (its MODEL_CHAIN)."""
+    return [m for m in models if m not in gemini_client.MODEL_CHAIN]
+
+
+def select_api_key(models: list[str], protect_live_quota: bool) -> list[str]:
+    """Use the backtest's own key when set (every model allowed). Without it
+    the shared GEMINI_API_KEY is used; with protect_live_quota (the scheduled
+    run) the models are cut to ones the live app never calls, so the site's
+    daily quota is untouched. Returns the models to run (may be empty)."""
     key = os.getenv(BACKTEST_KEY_ENV)
     if key:
         gemini_client.use_api_key(key)
         log(f"Using {BACKTEST_KEY_ENV} (separate from the live app's key).")
-        return True
-    if require_own_key:
-        log(f"{BACKTEST_KEY_ENV} is not set -- refusing to spend the live app's quota. Add it to .env.")
-        return False
-    log(f"WARNING: {BACKTEST_KEY_ENV} not set; using the shared GEMINI_API_KEY.")
-    return True
+        return models
+    if protect_live_quota:
+        safe = models_safe_on_shared_key(models)
+        log(f"{BACKTEST_KEY_ENV} not set; on the shared key using only models the live app never calls: "
+            f"{', '.join(safe) or 'none'}.")
+        return safe
+    log(f"WARNING: {BACKTEST_KEY_ENV} not set; using the shared GEMINI_API_KEY for every model.")
+    return models
 
 
 def run(tickers: list[str], limit: int | None, models: list[str]) -> None:
@@ -480,13 +489,15 @@ if __name__ == "__main__":
     parser.add_argument("--limit", type=int, metavar="N",
                         help="Run at most N not-yet-done filings (smoke test with --limit 1).")
     parser.add_argument("--models", nargs="+", default=MODELS, help="Models to run (one worker each).")
-    parser.add_argument("--require-backtest-key", action="store_true",
-                        help=f"Exit unless {BACKTEST_KEY_ENV} is set (used by the scheduled run).")
+    parser.add_argument("--protect-live-quota", action="store_true",
+                        help=f"Without {BACKTEST_KEY_ENV}, run only models the live app never calls "
+                             "(used by the scheduled run).")
     args = parser.parse_args()
-    if not select_api_key(args.require_backtest_key):
+    models = select_api_key(args.models, args.protect_live_quota)
+    if not models:
         sys.exit(1)
     lock = acquire_run_lock()
     if lock is None:
         print("Another backtest run is already in progress -- exiting.")
         sys.exit(0)
-    run(args.tickers or TICKERS, args.limit, args.models)
+    run(args.tickers or TICKERS, args.limit, models)
