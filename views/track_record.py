@@ -24,6 +24,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+from core.benchmarks import baselines, long_short
 from core.stats import HitRate, hit_rate
 
 BACKTEST_DIR = Path(__file__).resolve().parent.parent / "docs" / "backtest"
@@ -192,6 +193,69 @@ def render_kpis(df: pd.DataFrame, cols: dict) -> None:
              f"{_pct(agree.rate)} of filings" + (f" · {n_no_street} had no rating history" if n_no_street else "")),
     ]
     st.markdown('<div class="tr-kpis">' + "".join(cards) + "</div>", unsafe_allow_html=True)
+
+
+def render_benchmarks(df: pd.DataFrame, cols: dict) -> None:
+    st.subheader("Does it beat simple rules?")
+    st.caption("Each caller is scored on its own Bullish/Bearish calls, with a 95% interval. \"Always Bullish\" "
+               "is hard to beat in a rising market. Momentum means calling the direction of the stock's prior "
+               "90 days. The agent has to beat these rules, not just the coin flip (the dashed line).")
+    frame = df if "prior_90d_return_pct" in df else df.assign(prior_90d_return_pct=float("nan"))
+    callers = [("Agent", _rate(df[cols["agent"]])), ("Wall Street", _rate(df[cols["street"]]))]
+    callers += [(b.name, b.rate) for b in baselines(frame, cols["ret"])]
+    table = pd.DataFrame([
+        {"caller": name, "rate": r.rate * 100, "lo": r.ci_low * 100, "hi": r.ci_high * 100,
+         "n": r.n, "label": f"{r.hits}/{r.n}"}
+        for name, r in callers if r.n
+    ])
+    st.altair_chart(_rate_chart(table, "caller", "Directional hit rate by caller", list(table["caller"])),
+                    width="stretch")
+
+
+def _spread_chart(cohorts: pd.DataFrame) -> alt.LayerChart:
+    data = cohorts.assign(sign=cohorts["spread"].map(lambda s: "Bullish" if s >= 0 else "Bearish"))
+    base = alt.Chart(data).encode(
+        x=alt.X("quarter:N", sort=sorted(data["quarter"]), title=None, axis=alt.Axis(labelAngle=0, ticks=False)),
+    )
+    bars = base.mark_bar(cornerRadiusEnd=4, width={"band": 0.55}).encode(
+        y=alt.Y("spread:Q", title="Long minus short, 90 days (pts)", axis=alt.Axis(gridOpacity=0.35)),
+        color=alt.Color("sign:N", scale=STANCE_SCALE, legend=None),
+        tooltip=[alt.Tooltip("quarter:N", title="Filing quarter"),
+                 alt.Tooltip("n_long:Q", title="Longs (Bullish)"), alt.Tooltip("n_short:Q", title="Shorts (Bearish)"),
+                 alt.Tooltip("long_ret:Q", title="Long avg (%)", format="+.2f"),
+                 alt.Tooltip("short_ret:Q", title="Short avg (%)", format="+.2f"),
+                 alt.Tooltip("spread:Q", title="Spread (pts)", format="+.2f")],
+    )
+    zero = alt.Chart(pd.DataFrame({"y": [0]})).mark_rule(color=TEXT_COLOR, opacity=0.6).encode(y="y:Q")
+    return (bars + zero).properties(title="Long-short return per filing quarter", height=260)
+
+
+def render_portfolio(df: pd.DataFrame, cols: dict) -> None:
+    st.subheader("Would the calls have made money?")
+    st.caption("Each filing quarter is one portfolio: equal-weight long every Bullish call, short every Bearish call, "
+               "each held 90 days. Neutral calls aren't traded. Quarters with fewer than 5 of either side are "
+               "skipped. No trading costs or borrow fees.")
+    ls = long_short(df, cols["ret"])
+    if ls.cohorts.empty or ls.mean_spread is None:
+        st.info("Not enough Bullish and Bearish calls in any one quarter yet. This fills in as the backtest runs.")
+        return
+    significant = ls.ci_low > 0 or ls.ci_high < 0
+    badge = ('<span class="tr-sig">✓ Interval excludes zero</span>' if significant
+             else '<span class="tr-sig">≈ Could still be zero</span>')
+    cards = [
+        _kpi("Long-short spread", f"{ls.mean_spread:+.1f} pts",
+             f"per 90 days · 95% CI {ls.ci_low:+.1f} to {ls.ci_high:+.1f}", badge),
+        _kpi("Sharpe ratio", "Too early" if ls.sharpe is None else f"{ls.sharpe:.2f}",
+             f"annualized from {len(ls.cohorts)} quarterly portfolios"
+             + (" (needs 4+)" if ls.sharpe is None else "")),
+        _kpi("Winning quarters", f"{ls.winning_cohorts} of {len(ls.cohorts)}", "longs beat shorts"),
+        _kpi("Growth of $1", "Too early" if ls.sharpe is None else f"${ls.cumulative[-1]:.2f}",
+             "needs 4+ quarterly portfolios" if ls.sharpe is None
+             else f"quarters compounded · worst drawdown {ls.max_drawdown:.0%}"),
+    ]
+    st.markdown('<div class="tr-kpis">' + "".join(cards) + "</div>", unsafe_allow_html=True)
+    st.altair_chart(_spread_chart(ls.cohorts), width="stretch")
+    st.caption("A Sharpe ratio from only a few quarters is noisy. Treat the spread's interval as the main evidence.")
 
 
 def _callout(edge: str, title: str, r: HitRate, who: str, body: str, group: pd.DataFrame, ret_col: str) -> str:
@@ -480,6 +544,8 @@ render_header(df, load_progress())
 scoring = st.segmented_control("Score calls against", [RAW, VS_MARKET], default=RAW, key="tr_scoring") or RAW
 cols = SCORING[scoring]
 render_kpis(df, cols)
+render_benchmarks(df, cols)
+render_portfolio(df, cols)
 render_disagreements(df, cols)
 render_distribution(df, cols)
 render_averages(df, cols)

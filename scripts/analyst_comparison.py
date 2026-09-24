@@ -59,6 +59,7 @@ class ComparisonRow:
     implied_upside_pct: float | None
     actual_return_pct: float | None
     excess_return_pct: float | None  # vs SPY over the same window
+    prior_90d_return_pct: float | None  # the stock's 90 days BEFORE filing (momentum baseline)
     agent_hit: bool | None
     street_hit: bool | None
     agent_hit_vs_market: bool | None
@@ -111,6 +112,8 @@ def compare_row(result: dict) -> ComparisonRow:
         implied_upside_pct=upside,
         actual_return_pct=actual,
         excess_return_pct=excess,
+        prior_90d_return_pct=(round(market.return_90d_pct * 100, 2)
+                              if market and market.return_90d_pct is not None else None),
         agent_hit=directional_hit(result["stance"], actual),
         street_hit=directional_hit(snap.stance, actual),
         agent_hit_vs_market=directional_hit(result["stance"], excess),
