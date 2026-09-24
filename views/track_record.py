@@ -36,6 +36,9 @@ STANCE_COLOR_MAP = dict(zip(STANCES, STANCE_COLORS))
 NO_DATA = "No data"
 NO_DATA_COLOR = "#d4d4d0"
 SIGNIFICANCE = 0.05
+# Found live: Streamlit 1.64 ignores a layered chart's fixed spec height and squashes it to
+# about half. Dot-interval charts size per row (alt.Step); the rest pass a pixel height.
+RATE_ROW_STEP = 34
 MAX_CHIPS = 10
 # Chart text follows the active theme's ink, never a series color.
 _IS_DARK = getattr(getattr(st.context, "theme", None), "type", None) == "dark"
@@ -137,7 +140,8 @@ def _sig_badge(r: HitRate) -> str:
     if r.p_value is None:
         return ""
     if r.p_value < SIGNIFICANCE:
-        return f'<span class="tr-sig">✓ Beats a coin flip (p = {r.p_value:.3f})</span>'
+        shown = "p < 0.001" if r.p_value < 0.001 else f"p = {r.p_value:.3f}"
+        return f'<span class="tr-sig">✓ Beats a coin flip ({shown})</span>'
     return f'<span class="tr-sig">≈ Could still be luck (p = {r.p_value:.2f})</span>'
 
 
@@ -167,8 +171,11 @@ def render_header(df: pd.DataFrame, progress: dict | None) -> None:
         "and against what Wall Street analysts were saying <i>on that same date</i>.</p>",
         unsafe_allow_html=True,
     )
-    if progress and progress["filings_done"] < progress["filings_in_window"]:
-        done, total = progress["filings_done"], progress["filings_in_window"]
+    # progress.json is only rewritten at the start and end of a run, so mid-run
+    # the scored rows on this page are the fresher count.
+    done = max(progress["filings_done"], len(df)) if progress else 0
+    if progress and done < progress["filings_in_window"]:
+        total = progress["filings_in_window"]
         st.markdown(
             f'<div class="tr-progress"><b>Backtest in progress:</b> {done} of {total} filings scored '
             f"({100 * done / total:.0f}%). The numbers below update as the run continues. "
@@ -254,7 +261,7 @@ def render_portfolio(df: pd.DataFrame, cols: dict) -> None:
              else f"quarters compounded · worst drawdown {ls.max_drawdown:.0%}"),
     ]
     st.markdown('<div class="tr-kpis">' + "".join(cards) + "</div>", unsafe_allow_html=True)
-    st.altair_chart(_spread_chart(ls.cohorts), width="stretch")
+    st.altair_chart(_spread_chart(ls.cohorts), width="stretch", height=330)
     st.caption("A Sharpe ratio from only a few quarters is noisy. Treat the spread's interval as the main evidence.")
 
 
@@ -309,7 +316,8 @@ def render_distribution(df: pd.DataFrame, cols: dict) -> None:
         x=alt.X(f"mean({cols['ret']}):Q"), tooltip=[alt.Tooltip(f"mean({cols['ret']}):Q", title="Average", format="+.2f")],
     )
     zero = alt.Chart(pd.DataFrame({"x": [0]})).mark_rule(strokeDash=[4, 4], opacity=0.6).encode(x="x:Q")
-    st.altair_chart((dots + means + zero).properties(height=90 * len(domain)), width="stretch")
+    st.altair_chart((dots + means + zero).properties(height=90 * len(domain)), width="stretch",
+                    height=90 * len(domain) + 70)
     st.caption("Each dot is one filing; the dark tick is the average. Hover a dot for details.")
 
 
@@ -348,9 +356,9 @@ def render_averages(df: pd.DataFrame, cols: dict) -> None:
     y_domain = [min(0.0, both["lo"].min()) - 3, max(0.0, both["hi"].max()) + 4]
     left, right = st.columns(2)
     with left:
-        st.altair_chart(_avg_chart(agent, "The agent's calls", y_domain, "Average (%)"), width="stretch")
+        st.altair_chart(_avg_chart(agent, "The agent's calls", y_domain, "Average (%)"), width="stretch", height=340)
     with right:
-        st.altair_chart(_avg_chart(street, "Wall Street consensus", y_domain, "Average (%)"), width="stretch")
+        st.altair_chart(_avg_chart(street, "Wall Street consensus", y_domain, "Average (%)"), width="stretch", height=340)
 
 
 def _rate_table(df: pd.DataFrame, by: str, hit_col: str) -> pd.DataFrame:
@@ -376,7 +384,7 @@ def _rate_chart(table: pd.DataFrame, by: str, title: str, sort: list[str] | None
     )
     label = base.mark_text(align="left", dx=8, color=TEXT_COLOR).encode(x="hi:Q", text="label:N")
     coin = alt.Chart(pd.DataFrame({"x": [50]})).mark_rule(strokeDash=[4, 4], opacity=0.7).encode(x="x:Q")
-    return (whisker + point + label + coin).properties(title=title, height=max(160, 34 * len(table)))
+    return (whisker + point + label + coin).properties(title=title, height=alt.Step(RATE_ROW_STEP))
 
 
 def render_stability(df: pd.DataFrame, cols: dict) -> None:
@@ -434,7 +442,7 @@ def render_matrix(df: pd.DataFrame) -> None:
     n_agree = int(comparable["agrees"].astype(bool).sum())
     left, right = st.columns([3, 2])
     with left:
-        st.altair_chart((heat + text).properties(height=280), width="stretch")
+        st.altair_chart((heat + text).properties(height=280), width="stretch", height=350)
     with right:
         st.markdown(f"The diagonal is agreement: **{n_agree} of {len(comparable)}** filings. " + _lean_sentence(comparable))
         missing = df[df["agrees"].isna()]
