@@ -41,9 +41,14 @@ app.py                  ── Streamlit router: views/analyze.py (live analysis
 ## Track record
 
 The app's **Track Record** page scores the agent's calls at scale. The universe
-is a fixed list of 66 large caps across 11 sectors, chosen before any results
-existed. Every 10-Q they filed from July 2024 onward is a test case (~390
-filings across ~7 quarters). For each one:
+is the S&P 500, frozen to `docs/backtest/universe.csv` before any results
+existed. Every 10-Q those companies filed from July 2024 onward is a test case
+(~3,000 filings, and the count grows as new filings reach their 90-day
+horizon). Filings run newest quarter first. Recent quarters are the cleanest
+test, because the model is least likely to have seen their outcomes in
+training. A nightly scheduled run scores as many filings as the free quota
+allows and pushes the results, so the live page updates on its own. For each
+filing:
 
 - the pipeline sees only the XBRL facts and price available on the filing
   date, and is told that date is "today"
@@ -58,7 +63,7 @@ against a coin flip (`core/stats.py`). There are also breakdowns by quarter
 and by model, to catch an edge that only shows up in one of them.
 
 Gemini's free tier caps each model at 20 requests/day (6 per filing), so the
-run is resumable: filings go in a fixed random order, results save after
+run is resumable: filings go newest quarter first, results save after
 every filing, and a daily scheduled task (`scripts/run_backtest_daily.bat`)
 picks up where the last run stopped.
 

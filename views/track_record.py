@@ -441,9 +441,11 @@ def render_method() -> None:
     with st.expander("How this was measured, and what it can't tell you"):
         st.markdown(
             """
-**Sample.** A fixed list of 66 large caps across 11 sectors, chosen before any results existed. Every 10-Q
-each company filed from July 2024 onward counts, as long as 90 days of price history exist after it.
-Filings are processed in a fixed random order, so a partly finished run is still a fair sample.
+**Sample.** The S&P 500, with its membership frozen on Sept. 24, 2026, before these results existed. Every
+10-Q each company filed from July 2024 onward counts, as long as 90 days of price history exist after it.
+The sample keeps growing as new filings reach 90 days. The newest quarter is scored first, in a fixed
+random order within each quarter. Until the run finishes, recent quarters make up more of the results
+than older ones, and the by-quarter chart shows that split.
 
 **Agent call.** For each filing the production pipeline saw only XBRL facts filed by that date and the stock
 price on that date. It was also told that the filing date was "today". Each filing was answered start to
@@ -464,6 +466,8 @@ one-sided exact binomial test against a 50% coin flip.
   especially for older filings. The "today is the filing date" instruction limits this but can't rule it
   out, so check the by-quarter chart: an edge that shows up only in older quarters is a warning sign.
 - Several models share the work. The by-model chart shows whether one of them behaves differently.
+- **Survivorship.** Only companies in the index today are included. Companies that dropped out after a bad
+  run are missing, which can flatter Bullish calls.
 - The analyst-rating feed has gaps and may miss some brokers. No transaction costs.
 """
         )

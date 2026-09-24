@@ -2,10 +2,11 @@
 Backtested directional-accuracy check for the pipeline's final Bullish /
 Neutral / Bearish stance -- at scale, across several models, resumable.
 
-Universe: TICKERS, a fixed 66-name, 11-sector large-cap list chosen before
-any run so results can't be cherry-picked. For each ticker, EVERY 10-Q
-filed between FILED_FROM and (today - horizon) is a backtest case, so the
-sample spans several quarters and market regimes, not one.
+Universe: TICKERS, the S&P 500 frozen to docs/backtest/universe.csv so
+results can't be cherry-picked. For each ticker, EVERY 10-Q filed between
+FILED_FROM and (today - horizon) is a backtest case, so the sample spans
+several quarters and market regimes, not one -- and keeps growing: each
+day's later cutoff lets newly matured filings in.
 
 Per filing: runs the real production pipeline using ONLY XBRL facts filed
 by that filing's date (facts_as_of) and the price as of that date, with the
@@ -22,9 +23,9 @@ model. A worker rides out short overloads / per-minute limits by waiting;
 once its model stays blocked it retires for the day and hands its filing
 back to the queue for the others.
 
-Resumable: cases run in a fixed-seed shuffled order (any prefix is a random
-sample of the whole), results are written after every filing, and finished
-(ticker, filing_date) cases are skipped -- rerun daily until done.
+Resumable: cases run newest quarter first, shuffled with a fixed seed within
+each quarter (order_newest_first), results are written after every filing,
+and finished (ticker, filing_date) cases are skipped -- rerun daily.
 
 Usage:
     pip install -r requirements-backtest.txt
@@ -60,19 +61,21 @@ from google.genai.errors import ClientError, ServerError
 from core import edgar_client, market_data, ratios
 from services import gemini_client, pipeline
 
-TICKERS = [
-    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "ORCL", "CRM", "ADBE", "INTC", "CSCO", "AMD",  # tech
-    "JPM", "BAC", "GS", "WFC", "MS", "C", "AXP", "BLK",                                            # financials
-    "JNJ", "PFE", "UNH", "MRK", "ABBV", "LLY", "TMO", "CVS",                                        # healthcare
-    "XOM", "CVX", "COP", "SLB",                                                                    # energy
-    "HD", "MCD", "NKE", "WMT", "COST", "PG", "KO", "PEP", "SBUX", "TGT", "LOW",                    # consumer
-    "CAT", "BA", "GE", "UPS", "HON", "LMT", "DE",                                                  # industrials
-    "DIS", "T", "VZ", "NFLX", "CMCSA",                                                             # media / telecom
-    "NEE", "DUK", "SO",                                                                            # utilities
-    "PLD", "AMT",                                                                                  # real estate
-    "LIN", "NEM", "FCX",                                                                           # materials
-    "TSLA", "F", "GM",                                                                             # autos
-]
+OUT_DIR = Path(__file__).resolve().parent.parent / "docs" / "backtest"
+# S&P 500 constituents frozen on 2026-09-24 (Wikipedia list; "." tickers
+# written with "-" as yfinance expects -- ticker_to_cik accepts either).
+# Frozen so the sample can't drift or be cherry-picked; it's a superset of the
+# original 66-name list. Current members only, so companies that left the
+# index before today are missing (survivorship bias -- noted on the page).
+UNIVERSE_CSV = OUT_DIR / "universe.csv"
+
+
+def load_universe() -> list[str]:
+    with UNIVERSE_CSV.open(newline="", encoding="utf-8") as f:
+        return [row["ticker"] for row in csv.DictReader(f)]
+
+
+TICKERS = load_universe()
 BENCHMARK = "SPY"
 
 # Full-size Gemini flash models the free tier actually serves (probed live
@@ -101,7 +104,6 @@ HORIZON_DAYS = 90             # calendar days after filing over which the actual
 HORIZON_SLACK_DAYS = 7        # a filing needs horizon + slack of real price history to be scored
 MAX_10QS_PER_TICKER = 12      # enough to cover FILED_FROM for every name
 SHUFFLE_SEED = 42
-OUT_DIR = Path(__file__).resolve().parent.parent / "docs" / "backtest"
 RESULTS_CSV = OUT_DIR / "results.csv"
 RAW_LOG = OUT_DIR / "raw_runs.json"
 PROGRESS_JSON = OUT_DIR / "progress.json"   # read by the Track Record page
@@ -237,9 +239,23 @@ def build_worklist(tickers: list[str]) -> list[Case]:
         if not filings:
             print(f"  {ticker}: no 10-Qs found on EDGAR")
         cases += [Case(ticker, f) for f in filings if FILED_FROM <= f.filing_date <= cutoff]
-    cases.sort(key=lambda c: (c.filing.filing_date, c.ticker))   # stable base before the seeded shuffle
-    random.Random(SHUFFLE_SEED).shuffle(cases)
-    return cases
+    return order_newest_first(cases)
+
+
+def _calendar_quarter(case: Case) -> tuple[int, int]:
+    period_end = date.fromisoformat(case.filing.report_date or case.filing.filing_date)
+    return period_end.year, (period_end.month - 1) // 3
+
+
+def order_newest_first(cases: list[Case]) -> list[Case]:
+    """Newest calendar quarter first, then the one before, and so on. Recent
+    filings are the cleanest test (least likely to be in the model's
+    training data), and as each new quarter's 90-day horizon matures it jumps
+    to the front. Within a quarter the order is a fixed-seed shuffle, so a
+    half-finished quarter is a random slice of it, not the A-to-M tickers."""
+    base = sorted(cases, key=lambda c: (c.filing.filing_date, c.ticker))   # stable base before the shuffle
+    random.Random(SHUFFLE_SEED).shuffle(base)
+    return sorted(base, key=_calendar_quarter, reverse=True)               # stable: keeps the shuffle
 
 
 def _analyze(case: Case, model: str, computed: dict, filing_text: str, snapshot) -> pipeline.AnalysisRun:

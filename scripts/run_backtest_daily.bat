@@ -9,3 +9,4 @@ echo ===== %date% %time% ===== >> logs\backtest.log
 venv\Scripts\python.exe -u scripts\backtest_accuracy.py --require-backtest-key >> logs\backtest.log 2>&1
 venv\Scripts\python.exe -u scripts\analyst_comparison.py >> logs\backtest.log 2>&1
 call scripts\publish_backtest.bat >> logs\backtest.log 2>&1
+call scripts\nightly_notes.bat >> logs\backtest.log 2>&1
