@@ -43,13 +43,23 @@ def _load_gemini_api_key() -> str | None:
     case (local dev without .streamlit/secrets.toml raises here), fixes
     it regardless of whether anything else already triggered the mirror."""
     key = os.getenv("GEMINI_API_KEY")
-    if key:
-        return key
-    try:
-        import streamlit as st
-        return st.secrets.get("GEMINI_API_KEY")
-    except Exception:  # noqa: BLE001 -- no secrets.toml locally, or not running under streamlit
+    if not key:
+        try:
+            import streamlit as st
+            key = st.secrets.get("GEMINI_API_KEY")
+        except Exception:  # noqa: BLE001 -- no secrets.toml locally, or not running under streamlit
+            return None
+    return _clean_key(key)
+
+
+def _clean_key(key: str | None) -> str | None:
+    """Found live: a key pasted into the Streamlit secrets box can carry
+    stray whitespace or an extra layer of quotes, and Gemini answers every
+    model with a bare 400 INVALID_ARGUMENT instead of "bad key"."""
+    if key is None:
         return None
+    cleaned = key.strip().strip("\"'").strip()
+    return cleaned or None
 
 
 GEMINI_API_KEY = _load_gemini_api_key()
