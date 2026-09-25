@@ -1,6 +1,6 @@
 # 10-Q Equity Research Agent
 
-**Live app:** https://10q-equity-agent-esldzub5xgfc3j8mcc8u42.streamlit.app/
+**Live app:** https://10q-equity-agent-lu7wjqswdyw7catzwyzq9j.streamlit.app/
 
 Enter any US-listed ticker. Pulls its real, latest 10-Q from SEC EDGAR
 (free, public, no key), computes standard financial ratios from the
