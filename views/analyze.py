@@ -40,9 +40,9 @@ st.markdown(
 /* layout="wide" above already tells Streamlit to use the full viewport,
    but this rule was still capping the actual content column at 1200px --
    fine on a laptop, wasteful on a real desktop monitor. This app is used
-   mostly at a desk (unlike Kaiser-Stats, which is mostly phone), so widen
-   the working area instead of defaulting to a narrow, scroll-heavy column. */
-.block-container { padding-top: 2rem; max-width: 1600px; }
+   mostly at a desk (unlike Kaiser-Stats, which is mostly phone), so use the
+   full width minus a small gutter instead of a narrow, scroll-heavy column. */
+.block-container { padding-top: 2rem; max-width: none; padding-left: 2.5rem; padding-right: 2.5rem; }
 .stance-badge {
     display: inline-block;
     padding: 0.35rem 1rem;

@@ -57,7 +57,7 @@ SCORING = {
 st.markdown(
     """
 <style>
-.block-container { padding-top: 2rem; max-width: 1400px; }
+.block-container { padding-top: 2rem; max-width: none; padding-left: 2.5rem; padding-right: 2.5rem; }
 .tr-lede { font-size: 1.02rem; opacity: 0.8; max-width: 62rem; margin: -0.5rem 0 1rem; }
 .tr-progress { border: 1px solid rgba(128,128,128,0.25); border-radius: 0.6rem; padding: 0.6rem 0.9rem;
     margin: 0 0 1.25rem; font-size: 0.9rem; }
@@ -377,7 +377,8 @@ def _rate_chart(table: pd.DataFrame, by: str, title: str, sort: list[str] | None
     base = alt.Chart(table).encode(y=y)
     whisker = base.mark_rule(strokeWidth=2, color=MUTED_COLOR).encode(x=alt.X("lo:Q", scale=x_scale), x2="hi:Q")
     point = base.mark_circle(size=110, color=TEXT_COLOR, opacity=1).encode(
-        x=alt.X("rate:Q", scale=x_scale, title="Directional hit rate (%)", axis=alt.Axis(gridOpacity=0.35)),
+        x=alt.X("rate:Q", scale=x_scale, title="Directional hit rate (%)",
+                   axis=alt.Axis(gridOpacity=0.35, values=list(range(0, 101, 10))))),
         tooltip=[alt.Tooltip(f"{by}:N"), alt.Tooltip("label:N", title="Right"),
                  alt.Tooltip("rate:Q", title="Hit rate (%)", format=".0f"),
                  alt.Tooltip("lo:Q", title="95% CI low", format=".0f"), alt.Tooltip("hi:Q", title="95% CI high", format=".0f")],
