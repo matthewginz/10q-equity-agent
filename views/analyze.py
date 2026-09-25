@@ -302,7 +302,7 @@ TICKER_DIRECTORY = _load_ticker_directory()
 
 compare_mode = st.checkbox("Compare with a second ticker")
 
-col1, col2 = st.columns(2) if compare_mode else (st.container(), None)
+col1, col2 = st.columns(2, gap="large") if compare_mode else (st.container(), None)
 with col1:
     ticker1 = st_searchbox(
         lambda q: _search_tickers(q, TICKER_DIRECTORY),
@@ -509,33 +509,33 @@ _KPI_COMPARE_DEFS = [
 ]
 
 
-def render_kpi_comparison(b1: Bundle, b2: Bundle) -> None:
-    # st.container(border=True), not a hand-rolled <div>, because a raw
-    # unsafe_allow_html div opened in one st.markdown call and closed in a
-    # later one does NOT wrap the native st.columns rows in between --
-    # Streamlit mounts each st.markdown call as its own sibling DOM node,
-    # so the browser just auto-closes the dangling tag. Found live.
+def _kpi_card(bundle: Bundle, other: Bundle) -> None:
+    """One company's key metrics, green where it beats the other company."""
     with st.container(border=True):
-        header = st.columns([2, 1, 1])
-        header[1].markdown(f"**{b1.ticker}**")
-        header[2].markdown(f"**{b2.ticker}**")
+        st.markdown(f"**{bundle.ticker}**")
         for label, fmt_key, getter in _KPI_COMPARE_DEFS:
-            v1, v2 = getter(b1.computed), getter(b2.computed)
-            # Only highlight a winner when BOTH sides have a real value to
-            # compare -- found live: with the old (v2 is None or v1 > v2)
-            # form, a lone value on one side (the other reported "n/a")
-            # always highlighted green, even a negative YoY figure, which
-            # reads as "this side won" when really there was nothing to
-            # compare it against.
-            both_present = v1 is not None and v2 is not None
-            better1 = both_present and v1 > v2
-            better2 = both_present and v2 > v1
-            s1 = fmt_ratio(fmt_key, v1) if v1 is not None else "n/a"
-            s2 = fmt_ratio(fmt_key, v2) if v2 is not None else "n/a"
-            row = st.columns([2, 1, 1])
+            value, rival = getter(bundle.computed), getter(other.computed)
+            # Only highlight a winner when BOTH sides have a real value --
+            # found live: a lone value (the other side "n/a") used to always
+            # show green, even a negative YoY figure.
+            better = value is not None and rival is not None and value > rival
+            shown = fmt_ratio(fmt_key, value) if value is not None else "n/a"
+            row = st.columns([3, 2])
             row[0].markdown(label)
-            row[1].markdown(f'<span class="{"kpi-win" if better1 else ""}">{s1}</span>', unsafe_allow_html=True)
-            row[2].markdown(f'<span class="{"kpi-win" if better2 else ""}">{s2}</span>', unsafe_allow_html=True)
+            row[1].markdown(f'<span class="{"kpi-win" if better else ""}">{shown}</span>', unsafe_allow_html=True)
+
+
+def render_kpi_comparison(b1: Bundle, b2: Bundle) -> None:
+    # Same two-column grid as the company cards above, so each company's
+    # numbers sit directly under its own card (found live: the old shared
+    # [label | b1 | b2] table put the second company's column well right of
+    # its card). st.container(border=True), not a hand-rolled <div>: a raw
+    # div opened in one st.markdown call doesn't wrap later native elements.
+    left, right = st.columns(2, gap="large")
+    with left:
+        _kpi_card(b1, b2)
+    with right:
+        _kpi_card(b2, b1)
 
 
 def render_chart_comparison(b1: Bundle, b2: Bundle) -> None:
@@ -547,7 +547,7 @@ def render_chart_comparison(b1: Bundle, b2: Bundle) -> None:
     except Exception:
         return  # trend charts are a bonus visualization; never block the core comparison on them
 
-    c1, c2 = st.columns(2)
+    c1, c2 = st.columns(2, gap="large")
     if rev1 or rev2:
         with c1:
             st.caption("Revenue, last 8 quarters ($) — overlaid")
@@ -617,7 +617,6 @@ def render_steps_side_by_side(b1: Bundle, b2: Bundle) -> None:
     the old layout put each company's steps in its own column of tabs, which
     made comparing the same step across the two awkward)."""
     st.subheader("Step-by-Step, Side by Side")
-    st.caption("Click a step to open or close it, or use Expand all / Collapse all in the header above.")
     with st.container(key=_STEPS_KEY):
         for s1, s2 in zip(b1.run.steps, b2.run.steps):
             with st.expander(s1.title, expanded=False):
@@ -646,24 +645,35 @@ def render_compare_header(b1: Bundle, b2: Bundle) -> None:
 
 
 def _expand_collapse_controls() -> None:
-    """Runs in the browser, not as st.button: results only exist on the run
-    that followed the Compare click, so a Streamlit rerun would wipe them.
-    Clicks each step's <summary> (rather than setting `open`) so the
-    expanders' own state stays in sync; a single step still toggles on its own."""
-    button = (f"font:600 0.85rem system-ui,sans-serif;color:{_INK};background:transparent;cursor:pointer;"
-              "border:1px solid rgba(128,128,128,0.45);border-radius:0.5rem;padding:0.3rem 0.8rem;")
+    """One button: "Expand all steps" until every step is open (by this
+    button or one by one), then "Collapse all steps". Runs in the browser,
+    not as st.button: results only exist on the run that followed the
+    Compare click, so a Streamlit rerun would wipe them. Clicks each step's
+    <summary> (rather than setting `open`) so the expanders' own state stays
+    in sync."""
+    style = (f"font:600 0.85rem system-ui,sans-serif;color:{_INK};background:transparent;cursor:pointer;"
+             "border:1px solid rgba(128,128,128,0.45);border-radius:0.5rem;padding:0.3rem 0.8rem;")
     components.html(
         f"""
-<div style="display:flex;gap:0.5rem;justify-content:flex-end;margin:0">
-  <button style="{button}" onclick="setAll(true)">Expand all steps</button>
-  <button style="{button}" onclick="setAll(false)">Collapse all steps</button>
+<div style="display:flex;justify-content:flex-end;margin:0">
+  <button id="toggle-steps" style="{style}">Expand all steps</button>
 </div>
 <script>
-function setAll(open) {{
-  window.parent.document.querySelectorAll('.st-key-{_STEPS_KEY} details').forEach(d => {{
-    if (d.open !== open) {{ const s = d.querySelector('summary'); if (s) s.click(); else d.open = open; }}
+const doc = window.parent.document;
+const button = document.getElementById("toggle-steps");
+const steps = () => [...doc.querySelectorAll(".st-key-{_STEPS_KEY} details")];
+const allOpen = () => {{ const s = steps(); return s.length > 0 && s.every(d => d.open); }};
+const sync = () => {{ button.textContent = allOpen() ? "Collapse all steps" : "Expand all steps"; }};
+button.onclick = () => {{
+  const open = !allOpen();
+  steps().forEach(d => {{
+    if (d.open !== open) {{ const s = d.querySelector("summary"); if (s) s.click(); else d.open = open; }}
   }});
-}}
+  setTimeout(sync, 50);
+}};
+doc.addEventListener("toggle", sync, true);   // a step opened or closed by hand
+new MutationObserver(sync).observe(doc.body, {{subtree: true, childList: true, attributes: true, attributeFilter: ["open"]}});
+sync();
 </script>""",
         height=40,
     )
