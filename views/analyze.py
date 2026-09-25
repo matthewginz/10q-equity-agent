@@ -26,6 +26,7 @@ from streamlit_searchbox import st_searchbox
 from core import edgar_client, ratios as ratios_mod
 from services.pipeline import compare_stances
 from ui.live_run import Bundle, escape_markdown_math, run_with_progress
+from ui.tidy import tidy_output
 
 # ── Styling ──────────────────────────────────────────────────────────────
 st.markdown(
@@ -148,6 +149,13 @@ div[data-testid="stLayoutWrapper"]:has(> .st-key-compare-header) {{ position: st
 .st-key-compare-header {{ background: {_PAGE_BG}; padding: 0.5rem 0 0.25rem;
     border-bottom: 1px solid rgba(128,128,128,0.25); }}
 .st-key-compare-header .company-card {{ margin-bottom: 0; }}
+/* Found in the stress test: at phone width the two cards stack, and pinning
+   both covered half the screen -- so below 768px the header scrolls normally. */
+@media (max-width: 768px) {{
+  div[data-testid="stLayoutWrapper"]:has(> .st-key-compare-header) {{ position: static; }}
+}}
+/* ...and the logo badge was squeezed into a tall pill when the card text wrapped. */
+.company-card > :first-child {{ flex-shrink: 0; }}
 </style>
 """,
     unsafe_allow_html=True,
@@ -474,10 +482,19 @@ def render_ratio_breakdown(bundle: Bundle) -> None:
             )
 
 
-def render_stance(bundle: Bundle) -> None:
-    st.subheader("Equity Research Stance")
-    st.markdown(stance_badge(bundle.run.recommendation), unsafe_allow_html=True)
-    st.markdown(escape_markdown_math(bundle.run.recommendation))
+def show_text(text: str) -> None:
+    """Pipeline text as rendered: repeated openings trimmed (ui/tidy.py), $ escaped."""
+    st.markdown(escape_markdown_math(tidy_output(text)))
+
+
+def render_stance(bundle: Bundle, heading: bool = True) -> None:
+    # The badge reads the raw text; the rendered text drops the "Final Equity
+    # Research Stance: X" line that would only repeat the badge.
+    if heading:
+        st.subheader("Equity Research Stance")
+    label = "" if heading else f"<b>{bundle.ticker}</b>&nbsp;&nbsp;"
+    st.markdown(label + stance_badge(bundle.run.recommendation), unsafe_allow_html=True)
+    show_text(bundle.run.recommendation)
 
 
 def render_steps(bundle: Bundle) -> None:
@@ -485,7 +502,7 @@ def render_steps(bundle: Bundle) -> None:
     tabs = st.tabs([s.title for s in bundle.run.steps])
     for tab, step in zip(tabs, bundle.run.steps):
         with tab:
-            st.markdown(escape_markdown_math(step.output))
+            show_text(step.output)
 
 
 def render_single(bundle: Bundle) -> None:
@@ -576,7 +593,7 @@ def render_verdict(b1: Bundle, b2: Bundle) -> None:
     # markdown heading (###) glued directly to <div> with no blank line
     # doesn't get parsed as a block-level heading and renders as literal
     # text, even though a table a few lines later parses fine.
-    st.markdown(f'<div class="verdict-card">\n\n{escape_markdown_math(verdict)}\n\n</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="verdict-card">\n\n{escape_markdown_math(tidy_output(verdict))}\n\n</div>', unsafe_allow_html=True)
 
 
 def render_compare(b1: "Bundle | None", b2: "Bundle | None") -> None:
@@ -603,11 +620,12 @@ def render_compare(b1: "Bundle | None", b2: "Bundle | None") -> None:
     render_verdict(b1, b2)
 
     st.divider()
+    st.subheader("Equity Research Stance")   # once for both boxes, not repeated in each
     left, right = st.columns(2, gap="large")
     with left, st.container(border=True):
-        render_stance(b1)
+        render_stance(b1, heading=False)
     with right, st.container(border=True):
-        render_stance(b2)
+        render_stance(b2, heading=False)
     render_steps_side_by_side(b1, b2)
 
 
@@ -623,10 +641,10 @@ def render_steps_side_by_side(b1: Bundle, b2: Bundle) -> None:
                 left, right = st.columns(2, gap="large")
                 with left:
                     st.markdown(f"**{b1.ticker}**")
-                    st.markdown(escape_markdown_math(s1.output))
+                    show_text(s1.output)
                 with right:
                     st.markdown(f"**{b2.ticker}**")
-                    st.markdown(escape_markdown_math(s2.output))
+                    show_text(s2.output)
 
 
 _STEPS_KEY = "steps-side-by-side"
