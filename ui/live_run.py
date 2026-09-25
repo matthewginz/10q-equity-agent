@@ -20,13 +20,16 @@ from __future__ import annotations
 
 import threading
 import time
+from collections import OrderedDict
 from dataclasses import dataclass, field
+from datetime import date
 
 import requests
 import streamlit as st
 from google.genai.errors import ClientError, ServerError
 
 from core import edgar_client, market_data, ratios as ratios_mod
+from services.gemini_client import AllModelsBusy
 from services.pipeline import AnalysisRun, run_analysis
 
 DATA_STAGES = [
@@ -142,6 +145,8 @@ def _run_pipeline(state: RunState, filing, computed: dict, filing_text: str, sna
     try:
         return run_analysis(filing.company_name, state.ticker, filing.report_date, computed, filing_text,
                             market=snapshot, on_step=on_step, on_step_done=on_step_done)
+    except AllModelsBusy as exc:
+        raise UserFacingError(f"Couldn't finish {state.ticker}: {exc}") from exc
     except (ClientError, ServerError) as exc:
         raise UserFacingError(
             f"The free-tier LLM pipeline failed on every fallback model for {state.ticker}: {exc}. "
@@ -149,10 +154,50 @@ def _run_pipeline(state: RunState, filing, computed: dict, filing_text: str, sna
         ) from exc
 
 
+# Same filing, same day -> same analysis, so it's served from memory instead of
+# spending 6 more free-tier requests (visitors tend to try the same famous
+# tickers). Keyed by the filing's accession number, so a new 10-Q is always
+# analyzed fresh, and by date, so the price-aware final step is at most a day old.
+MAX_CACHED_ANALYSES = 200
+FINAL_STEP_TITLE = "Final Equity Stance"   # the title services/pipeline.py reports for step 6
+_ANALYSIS_CACHE: OrderedDict[tuple[str, str, str], AnalysisRun] = OrderedDict()
+_cache_lock = threading.Lock()
+
+
+def _cache_key(ticker: str, filing) -> tuple[str, str, str]:
+    return ticker, getattr(filing, "accession_number", ""), date.today().isoformat()
+
+
+def _cached_run(key: tuple[str, str, str]) -> AnalysisRun | None:
+    with _cache_lock:
+        return _ANALYSIS_CACHE.get(key)
+
+
+def _remember_run(key: tuple[str, str, str], run: AnalysisRun) -> None:
+    with _cache_lock:
+        _ANALYSIS_CACHE[key] = run
+        while len(_ANALYSIS_CACHE) > MAX_CACHED_ANALYSES:
+            _ANALYSIS_CACHE.popitem(last=False)
+
+
+def _replay(state: RunState, run: AnalysisRun) -> None:
+    """Fill the progress view from a cached run, as if it had just finished."""
+    state.pipeline_started = state.last_step_at = time.monotonic()
+    state.steps.extend((step.title, step.output) for step in run.steps)
+    state.steps.append((FINAL_STEP_TITLE, run.recommendation))   # a live run reports step 6 too
+    state.bump()
+
+
 def _worker(state: RunState) -> None:
     try:
         filing, facts_json, computed, filing_text, snapshot = _fetch_inputs(state)
-        run = _run_pipeline(state, filing, computed, filing_text, snapshot)
+        key = _cache_key(state.ticker, filing)
+        run = _cached_run(key)
+        if run is not None:
+            _replay(state, run)
+        else:
+            run = _run_pipeline(state, filing, computed, filing_text, snapshot)
+            _remember_run(key, run)
         state.bundle = Bundle(state.ticker, filing, facts_json, computed, run, snapshot)
     except UserFacingError as exc:
         state.error = str(exc)

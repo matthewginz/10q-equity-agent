@@ -402,7 +402,8 @@ def worker(model: str, work: queue.Queue, stats: dict[str, int]) -> None:
 def models_safe_on_shared_key(models: list[str]) -> list[str]:
     """Free-tier quota is per model, so on the live app's key the backtest
     may only use models the app itself never calls (its MODEL_CHAIN)."""
-    return [m for m in models if m not in gemini_client.MODEL_CHAIN]
+    return [m for m in models
+            if m not in gemini_client.MODEL_CHAIN or m in gemini_client.HIGH_QUOTA_MODELS]
 
 
 def select_api_key(models: list[str], protect_live_quota: bool) -> list[str]:

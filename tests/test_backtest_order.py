@@ -53,7 +53,7 @@ def test_shared_key_keeps_only_models_the_live_app_never_calls():
     safe = bt.models_safe_on_shared_key(bt.MODELS)
     assert "gemma-4-26b-a4b-it" in safe
     assert "gemini-3.5-flash" not in safe     # the live app's default model
-    assert not set(safe) & set(bt.gemini_client.MODEL_CHAIN)
+    assert set(safe) & set(bt.gemini_client.MODEL_CHAIN) <= bt.gemini_client.HIGH_QUOTA_MODELS
 
 
 def test_universe_is_the_frozen_sp500_list():
