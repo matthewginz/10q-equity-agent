@@ -26,6 +26,7 @@ import streamlit as st
 
 from core.benchmarks import baselines, long_short
 from core.stats import HitRate, hit_rate
+from ui.tidy import tidy_output
 
 BACKTEST_DIR = Path(__file__).resolve().parent.parent / "docs" / "backtest"
 STANCES = ["Bullish", "Neutral", "Bearish"]
@@ -431,7 +432,9 @@ def render_matrix(df: pd.DataFrame) -> None:
                 axis=alt.Axis(orient="top", labelAngle=0, ticks=False, domain=False)),
         y=alt.Y("agent_stance:N", sort=STANCES, title="Agent's call", axis=alt.Axis(ticks=False, domain=False)),
     )
-    threshold = max(1, matrix["count"].max() * 0.5)
+    # float(), not the numpy scalar: found by the website gate -- numpy 2 prints it as
+    # "np.float64(147.0)", which leaked into the Vega expression and blanked this chart.
+    threshold = float(max(1, matrix["count"].max() * 0.5))
     heat = base.mark_rect(cornerRadius=6, stroke=CELL_GAP_COLOR, strokeWidth=3).encode(
         color=alt.Color("count:Q", scale=alt.Scale(range=["#eef4fc", "#1c5cab"]), legend=None),
         tooltip=[alt.Tooltip("agent_stance:N", title="Agent"), alt.Tooltip("street_stance:N", title="Street"),
@@ -506,8 +509,9 @@ def render_reasoning(df: pd.DataFrame) -> None:
     tabs = st.tabs(["Final stance", *[s["title"] for s in entry["steps"]]])
     for tab, text in zip(tabs, [entry["recommendation"], *[s["output"] for s in entry["steps"]]]):
         with tab:
-            # '$' escaped so paired dollar amounts don't render as LaTeX (same fix as the Analyze page)
-            st.markdown(text.replace("$", "\\$"))
+            # Repeated openings trimmed like the Analyze page (ui/tidy.py); '$' escaped so
+            # paired dollar amounts don't render as LaTeX.
+            st.markdown(tidy_output(text).replace("$", "\\$"))
 
 
 def render_method() -> None:
