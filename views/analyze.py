@@ -19,6 +19,7 @@ import math
 import pandas as pd
 import requests
 import streamlit as st
+import streamlit.components.v1 as components
 from google.genai.errors import ClientError, ServerError
 from streamlit_searchbox import st_searchbox
 
@@ -128,6 +129,25 @@ st.markdown(
     margin: 0.5rem 0 1.5rem;
 }
 h1, h2, h3 { letter-spacing: -0.01em; }
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+# Compare mode's company cards + expand/collapse controls stay pinned under
+# Streamlit's 3.75rem top bar while scrolling. Found live: sticky on the keyed
+# container itself does nothing -- Streamlit wraps it in an stLayoutWrapper of
+# exactly its height -- so the wrapper is what gets pinned.
+_IS_DARK = getattr(getattr(st.context, "theme", None), "type", None) == "dark"
+_PAGE_BG = "#0e1117" if _IS_DARK else "#ffffff"
+_INK = "#fafafa" if _IS_DARK else "#31333f"
+st.markdown(
+    f"""
+<style>
+div[data-testid="stLayoutWrapper"]:has(> .st-key-compare-header) {{ position: sticky; top: 3.75rem; z-index: 99; }}
+.st-key-compare-header {{ background: {_PAGE_BG}; padding: 0.5rem 0 0.25rem;
+    border-bottom: 1px solid rgba(128,128,128,0.25); }}
+.st-key-compare-header .company-card {{ margin-bottom: 0; }}
 </style>
 """,
     unsafe_allow_html=True,
@@ -562,12 +582,11 @@ def render_verdict(b1: Bundle, b2: Bundle) -> None:
 def render_compare(b1: "Bundle | None", b2: "Bundle | None") -> None:
     if b1 is None or b2 is None:
         return  # a fetch/pipeline error for one side was already shown by run_with_progress
+    render_compare_header(b1, b2)
     left, right = st.columns(2, gap="large")
     with left:
-        render_company_card(b1)
         render_market_snapshot(b1)
     with right:
-        render_company_card(b2)
         render_market_snapshot(b2)
 
     st.subheader("Key Metrics — Head to Head")
@@ -598,15 +617,56 @@ def render_steps_side_by_side(b1: Bundle, b2: Bundle) -> None:
     the old layout put each company's steps in its own column of tabs, which
     made comparing the same step across the two awkward)."""
     st.subheader("Step-by-Step, Side by Side")
-    for i, (s1, s2) in enumerate(zip(b1.run.steps, b2.run.steps)):
-        with st.expander(s1.title, expanded=i == 0):
-            left, right = st.columns(2, gap="large")
-            with left:
-                st.markdown(f"**{b1.ticker}**")
-                st.markdown(escape_markdown_math(s1.output))
-            with right:
-                st.markdown(f"**{b2.ticker}**")
-                st.markdown(escape_markdown_math(s2.output))
+    st.caption("Click a step to open or close it, or use Expand all / Collapse all in the header above.")
+    with st.container(key=_STEPS_KEY):
+        for s1, s2 in zip(b1.run.steps, b2.run.steps):
+            with st.expander(s1.title, expanded=False):
+                left, right = st.columns(2, gap="large")
+                with left:
+                    st.markdown(f"**{b1.ticker}**")
+                    st.markdown(escape_markdown_math(s1.output))
+                with right:
+                    st.markdown(f"**{b2.ticker}**")
+                    st.markdown(escape_markdown_math(s2.output))
+
+
+_STEPS_KEY = "steps-side-by-side"
+
+
+def render_compare_header(b1: Bundle, b2: Bundle) -> None:
+    """Both company cards, pinned to the top while scrolling (CSS above),
+    with expand/collapse-all for the side-by-side steps."""
+    with st.container(key="compare-header"):
+        left, right = st.columns(2, gap="large")
+        with left:
+            render_company_card(b1)
+        with right:
+            render_company_card(b2)
+        _expand_collapse_controls()
+
+
+def _expand_collapse_controls() -> None:
+    """Runs in the browser, not as st.button: results only exist on the run
+    that followed the Compare click, so a Streamlit rerun would wipe them.
+    Clicks each step's <summary> (rather than setting `open`) so the
+    expanders' own state stays in sync; a single step still toggles on its own."""
+    button = (f"font:600 0.85rem system-ui,sans-serif;color:{_INK};background:transparent;cursor:pointer;"
+              "border:1px solid rgba(128,128,128,0.45);border-radius:0.5rem;padding:0.3rem 0.8rem;")
+    components.html(
+        f"""
+<div style="display:flex;gap:0.5rem;justify-content:flex-end;margin:0">
+  <button style="{button}" onclick="setAll(true)">Expand all steps</button>
+  <button style="{button}" onclick="setAll(false)">Collapse all steps</button>
+</div>
+<script>
+function setAll(open) {{
+  window.parent.document.querySelectorAll('.st-key-{_STEPS_KEY} details').forEach(d => {{
+    if (d.open !== open) {{ const s = d.querySelector('summary'); if (s) s.click(); else d.open = open; }}
+  }});
+}}
+</script>""",
+        height=40,
+    )
 
 
 if run_clicked:
