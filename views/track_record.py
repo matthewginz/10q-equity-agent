@@ -378,7 +378,7 @@ def _rate_chart(table: pd.DataFrame, by: str, title: str, sort: list[str] | None
     whisker = base.mark_rule(strokeWidth=2, color=MUTED_COLOR).encode(x=alt.X("lo:Q", scale=x_scale), x2="hi:Q")
     point = base.mark_circle(size=110, color=TEXT_COLOR, opacity=1).encode(
         x=alt.X("rate:Q", scale=x_scale, title="Directional hit rate (%)",
-                   axis=alt.Axis(gridOpacity=0.35, values=list(range(0, 101, 10))))),
+                   axis=alt.Axis(gridOpacity=0.35, values=list(range(0, 101, 10)))),
         tooltip=[alt.Tooltip(f"{by}:N"), alt.Tooltip("label:N", title="Right"),
                  alt.Tooltip("rate:Q", title="Hit rate (%)", format=".0f"),
                  alt.Tooltip("lo:Q", title="95% CI low", format=".0f"), alt.Tooltip("hi:Q", title="95% CI high", format=".0f")],
