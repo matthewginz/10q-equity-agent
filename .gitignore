@@ -7,3 +7,7 @@ venv/
 *.log
 .backtest.lock
 notes/
+
+# local tool state (serena index/memories, ruflo runtime) -- never publish
+.serena/
+.claude-flow/
