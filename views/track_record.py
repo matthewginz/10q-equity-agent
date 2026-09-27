@@ -96,8 +96,17 @@ def _quarter(ts: pd.Timestamp) -> str:
     return f"{ts.year} Q{(ts.month - 1) // 3 + 1}"
 
 
+def _mtime(name: str) -> float:
+    path = BACKTEST_DIR / name
+    return path.stat().st_mtime if path.exists() else 0.0
+
+
+# Each loader takes its file's mtime as the cache key. Found live: with no argument,
+# the cache outlived Streamlit Cloud pulling fresh backtest files, so the deployed
+# page kept showing days-old numbers. (No leading underscore: st.cache_data skips
+# hashing those.)
 @st.cache_data(show_spinner=False)
-def load_comparison() -> pd.DataFrame:
+def load_comparison(mtime: float) -> pd.DataFrame:
     frame = pd.read_csv(BACKTEST_DIR / "analyst_comparison.csv")
     frame["street_label"] = frame["street_stance"].replace({"Insufficient": NO_DATA})
     frame["street_mix"] = frame.apply(
@@ -110,7 +119,7 @@ def load_comparison() -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False)
-def load_raw_runs() -> dict[tuple[str, str], dict]:
+def load_raw_runs(mtime: float) -> dict[tuple[str, str], dict]:
     path = BACKTEST_DIR / "raw_runs.json"
     if not path.exists():
         return {}
@@ -118,7 +127,7 @@ def load_raw_runs() -> dict[tuple[str, str], dict]:
 
 
 @st.cache_data(show_spinner=False)
-def load_progress() -> dict | None:
+def load_progress(mtime: float) -> dict | None:
     path = BACKTEST_DIR / "progress.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
@@ -489,7 +498,7 @@ def render_table(df: pd.DataFrame, cols: dict) -> None:
 
 
 def render_reasoning(df: pd.DataFrame) -> None:
-    runs = load_raw_runs()
+    runs = load_raw_runs(_mtime("raw_runs.json"))
     st.subheader("Read the agent's reasoning")
     options = [(r.ticker, r.filing_date) for r in df.sort_values("filed", ascending=False).itertuples()
                if (r.ticker, r.filing_date) in runs]
@@ -552,8 +561,8 @@ one-sided exact binomial test against a 50% coin flip.
 
 
 # ── Page ─────────────────────────────────────────────────────────────────
-df = load_comparison()
-render_header(df, load_progress())
+df = load_comparison(_mtime("analyst_comparison.csv"))
+render_header(df, load_progress(_mtime("progress.json")))
 scoring = st.segmented_control("Score calls against", [RAW, VS_MARKET], default=RAW, key="tr_scoring") or RAW
 cols = SCORING[scoring]
 render_kpis(df, cols)

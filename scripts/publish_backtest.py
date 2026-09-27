@@ -5,6 +5,7 @@ end of each daily chunk via publish_backtest.bat). A full S&P 500 run takes days
 so waiting for it to finish meant the live Track Record page sat stale.
 
 Steps, each one stopping the publish if it fails:
+  0. analyst_comparison.csv is rebuilt (the page's numbers come from it)
   1. the data files parse (the backtest rewrites them in place, so a read can
      land mid-write; retry a few times before giving up)
   2. progress.json gets the fresh scored count + timestamp (the backtest only
@@ -90,6 +91,18 @@ def take_valid_snapshot() -> dict[Path, bytes] | None:
     return None
 
 
+def refresh_comparison() -> bool:
+    """Rebuild analyst_comparison.csv from the current results. The Track Record page's
+    numbers come from this file, not results.csv, and the daily chain only rebuilds it
+    once a chunk ends -- found live: a mid-run publish showed '2705 scored' over KPIs
+    still counting 588."""
+    python = ROOT / "venv" / "Scripts" / "python.exe"
+    result = run([str(python), "-u", str(ROOT / "scripts" / "analyst_comparison.py")], timeout=3600)
+    if result.returncode != 0:
+        log(f"analyst_comparison.py failed (exit {result.returncode}): {result.stderr.strip()[-300:]}")
+    return result.returncode == 0
+
+
 def has_new_results() -> bool:
     return run(["git", "diff", "--quiet", "--", *rel([RESULTS_CSV, RAW_LOG, ANALYST_CSV])]).returncode != 0
 
@@ -166,6 +179,9 @@ def main() -> int:
     if not has_new_results():
         log("no new backtest results, nothing to publish")
         return 0
+    if not refresh_comparison():
+        log("not publishing: the page's numbers would disagree with the new results")
+        return 1
     snapshot = take_valid_snapshot()
     if snapshot is None:
         log("data files never became readable, not publishing")
