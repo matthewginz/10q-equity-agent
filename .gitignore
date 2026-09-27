@@ -6,6 +6,7 @@ venv/
 .streamlit/secrets.toml
 *.log
 .backtest.lock
+.publish.lock
 notes/
 
 # local tool state (serena index/memories, ruflo runtime) -- never publish

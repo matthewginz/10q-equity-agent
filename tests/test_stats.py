@@ -38,3 +38,10 @@ def test_hit_rate_bundles_everything():
     assert result.p_value == pytest.approx(0.0284, abs=1e-3)
     empty = hit_rate(0, 0)
     assert empty.rate is None and empty.ci_low is None and empty.p_value is None
+
+
+def test_p_value_holds_at_full_backtest_size():
+    # found live: math.comb(n, k) overflowed float past ~1030 filings and crashed Track Record
+    assert binomial_p_value(1500, 3000) == pytest.approx(0.5073, abs=1e-3)
+    assert binomial_p_value(1650, 3000) < 1e-7
+    assert binomial_p_value(0, 3000) == pytest.approx(1.0)

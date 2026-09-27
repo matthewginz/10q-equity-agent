@@ -21,6 +21,7 @@ details in logs/backtest.log.
 import csv
 import io
 import json
+import os
 import subprocess
 import sys
 import time
@@ -43,6 +44,8 @@ VALID_TRIES = 6
 VALID_WAIT_S = 10
 DEPLOY_TIMEOUT_S = 15 * 60
 DEPLOY_POLL_S = 60
+LOCK = ROOT / ".publish.lock"
+STALE_LOCK_S = 2 * 60 * 60  # longer than any real publish
 
 
 def log(msg: str) -> None:
@@ -175,7 +178,29 @@ def live_shows(updated: str) -> bool:
     return False
 
 
+def acquire_lock() -> bool:
+    """The scheduled task and the end of the daily chain can both call this; only
+    one may commit and push at a time."""
+    if LOCK.exists() and time.time() - LOCK.stat().st_mtime > STALE_LOCK_S:
+        LOCK.unlink(missing_ok=True)
+    try:
+        os.close(os.open(LOCK, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+        return True
+    except FileExistsError:
+        return False
+
+
 def main() -> int:
+    if not acquire_lock():
+        log("another publish is running, skipping")
+        return 0
+    try:
+        return publish()
+    finally:
+        LOCK.unlink(missing_ok=True)
+
+
+def publish() -> int:
     if not has_new_results():
         log("no new backtest results, nothing to publish")
         return 0

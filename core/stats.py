@@ -40,7 +40,11 @@ def binomial_p_value(hits: int, n: int, p0: float = 0.5) -> float | None:
     skill (right with probability p0) would do at least this well."""
     if n == 0:
         return None
-    return sum(math.comb(n, k) * p0 ** k * (1 - p0) ** (n - k) for k in range(hits, n + 1))
+    # terms summed in log space: math.comb(n, k) overflows float past ~1030 filings
+    logs = [math.lgamma(n + 1) - math.lgamma(k + 1) - math.lgamma(n - k + 1)
+            + k * math.log(p0) + (n - k) * math.log(1 - p0) for k in range(hits, n + 1)]
+    top = max(logs)
+    return min(1.0, math.exp(top) * sum(math.exp(x - top) for x in logs))
 
 
 def hit_rate(hits: int, n: int) -> HitRate:
