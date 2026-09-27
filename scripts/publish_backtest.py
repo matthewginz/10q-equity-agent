@@ -117,7 +117,9 @@ def gate(mode_args: list[str]) -> bool:
 def stage_snapshot(snapshot: dict[Path, bytes]) -> bool:
     """Put the checked bytes straight into git's index (not whatever is on disk now)."""
     for path, data in snapshot.items():
-        blob = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=ROOT, input=data, capture_output=True)
+        # --path applies the same line-ending filters `git add` would
+        blob = subprocess.run(["git", "hash-object", "-w", "--stdin", "--path", rel([path])[0]],
+                              cwd=ROOT, input=data, capture_output=True)
         if blob.returncode != 0:
             log(f"hash-object failed for {path.name}: {blob.stderr.decode(errors='replace').strip()}")
             return False
