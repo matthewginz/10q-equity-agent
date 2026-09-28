@@ -1,13 +1,19 @@
 ticker,company,filing_date,report_date,stance,actual_return_pct,spy_return_pct,excess_return_pct,hit,hit_vs_market,models
 FDS,FACTSET RESEARCH SYSTEMS INC,2024-07-03,2024-05-31,Bullish,9.44,3.43,6.02,True,True,gemma-4-26b-a4b-it
+STZ,"CONSTELLATION BRANDS, INC.",2024-07-03,2024-05-31,Bullish,3.35,3.43,-0.07,True,False,gemma-4-26b-a4b-it
+JBL,JABIL INC,2024-07-09,2024-05-31,Bearish,11.26,2.47,8.79,False,False,gemma-4-26b-a4b-it
 DAL,"DELTA AIR LINES, INC.",2024-07-11,2024-06-30,Bearish,13.71,4.03,9.68,False,False,gemma-4-26b-a4b-it
 PEP,PEPSICO INC,2024-07-11,2024-06-15,Neutral,6.04,4.03,2.01,,,gemma-4-26b-a4b-it
 ELV,"Elevance Health, Inc.",2024-07-17,2024-06-30,Neutral,-6.83,4.42,-11.26,,,gemma-4-26b-a4b-it
+FAST,FASTENAL CO,2024-07-17,2024-06-30,Neutral,10.51,4.42,6.09,,,gemma-4-26b-a4b-it
 OMC,OMNICOM GROUP INC.,2024-07-17,2024-06-30,Bearish,14.43,4.42,10.01,False,False,gemma-4-26b-a4b-it
+DPZ,DOMINOS PIZZA INC,2024-07-18,2024-06-16,Neutral,5.11,5.69,-0.57,,,gemma-4-26b-a4b-it
 MRSH,"MARSH & MCLENNAN COMPANIES, INC.",2024-07-18,2024-06-30,Bullish,5.61,5.69,-0.08,True,False,gemma-4-26b-a4b-it
 SNA,Snap-on Inc,2024-07-18,2024-06-29,Bullish,10.93,5.69,5.24,True,True,gemma-4-26b-a4b-it
 UAL,"United Airlines Holdings, Inc.",2024-07-18,2024-06-30,Bullish,55.25,5.69,49.56,True,True,gemma-4-26b-a4b-it
 AXP,AMERICAN EXPRESS CO,2024-07-19,2024-06-30,Neutral,18.21,6.4,11.81,,,gemma-4-26b-a4b-it
+ISRG,INTUITIVE SURGICAL INC,2024-07-19,2024-06-30,Bullish,4.11,6.4,-2.29,True,False,gemma-4-26b-a4b-it
+KMI,"KINDER MORGAN, INC.",2024-07-19,2024-06-30,Bullish,17.05,6.4,10.65,True,True,gemma-4-26b-a4b-it
 NFLX,NETFLIX INC,2024-07-19,2024-06-30,Bullish,8.58,6.4,2.17,True,True,gemma-4-26b-a4b-it
 PPG,PPG INDUSTRIES INC,2024-07-19,2024-06-30,Neutral,3.18,6.4,-3.22,,,gemma-4-26b-a4b-it
 SYF,Synchrony Financial,2024-07-19,2024-06-30,Bearish,14.1,6.4,7.7,False,False,gemma-4-26b-a4b-it
@@ -15,18 +21,24 @@ TRV,"TRAVELERS COMPANIES, INC.",2024-07-19,2024-06-30,Neutral,30.71,6.4,24.31,,,
 ARE,"ALEXANDRIA REAL ESTATE EQUITIES, INC.",2024-07-22,2024-06-30,Neutral,-3.99,5.55,-9.54,,,gemma-4-26b-a4b-it
 BRO,"BROWN & BROWN, INC.",2024-07-22,2024-06-30,Bullish,13.99,5.55,8.44,True,True,gemma-4-26b-a4b-it
 EFX,EQUIFAX INC,2024-07-22,2024-06-30,Bullish,2.43,5.55,-3.11,True,False,gemma-4-26b-a4b-it
+IQV,IQVIA HOLDINGS INC.,2024-07-22,2024-06-30,Neutral,-5.73,5.55,-11.27,,,gemma-4-26b-a4b-it
 CMCSA,COMCAST CORP,2024-07-23,2024-06-30,Neutral,6.03,5.71,0.32,,,gemma-4-26b-a4b-it
 DHI,HORTON D R INC /DE/,2024-07-23,2024-06-30,Neutral,5.68,5.71,-0.04,,,gemma-4-26b-a4b-it
 DHR,DANAHER CORP /DE/,2024-07-23,2024-06-28,Neutral,3.09,5.71,-2.62,,,gemma-4-26b-a4b-it
+GE,GENERAL ELECTRIC CO,2024-07-23,2024-06-30,Neutral,13.09,5.71,7.38,,,gemma-4-26b-a4b-it
 GM,General Motors Co,2024-07-23,2024-06-30,Bullish,5.76,5.71,0.05,True,True,gemma-4-26b-a4b-it
 GPC,GENUINE PARTS CO,2024-07-23,2024-06-30,Neutral,5.07,5.71,-0.64,,,gemma-4-26b-a4b-it
+KMB,KIMBERLY CLARK CORP,2024-07-23,2024-06-30,Neutral,7.01,5.71,1.3,,,gemma-4-26b-a4b-it
 LMT,LOCKHEED MARTIN CORP,2024-07-23,2024-06-30,Neutral,23.29,5.71,17.58,,,gemma-4-26b-a4b-it
 MSCI,MSCI Inc.,2024-07-23,2024-06-30,Bullish,10.9,5.71,5.19,True,True,gemma-4-26b-a4b-it
+NXPI,NXP Semiconductors N.V.,2024-07-23,2024-06-30,Neutral,-11.87,5.71,-17.58,,,gemma-4-26b-a4b-it
 PHM,PULTEGROUP INC/MI/,2024-07-23,2024-06-30,Bullish,14.96,5.71,9.24,True,True,gemma-4-26b-a4b-it
 PNR,PENTAIR plc,2024-07-23,2024-06-30,Bullish,13.07,5.71,7.36,True,True,gemma-4-26b-a4b-it
 SHW,SHERWIN WILLIAMS CO,2024-07-23,2024-06-30,Bullish,11.04,5.71,5.32,True,True,gemma-4-26b-a4b-it
 ALLE,Allegion plc,2024-07-24,2024-06-30,Bullish,18.18,8.11,10.07,True,True,gemma-4-26b-a4b-it
 AOS,SMITH A O CORP,2024-07-24,2024-06-30,Neutral,-2.79,8.11,-10.9,,,gemma-4-26b-a4b-it
+CDNS,CADENCE DESIGN SYSTEMS INC,2024-07-24,2024-06-30,Neutral,-5.57,8.11,-13.68,,,gemma-4-26b-a4b-it
+DGX,QUEST DIAGNOSTICS INC,2024-07-24,2024-06-30,Neutral,9.96,8.11,1.86,,,gemma-4-26b-a4b-it
 EQT,EQT Corp,2024-07-24,2024-06-30,Bearish,3.01,8.11,-5.1,False,True,gemma-4-26b-a4b-it
 FTV,Fortive Corp,2024-07-24,2024-06-28,Neutral,7.87,8.11,-0.23,,,gemma-4-26b-a4b-it
 GD,GENERAL DYNAMICS CORP,2024-07-24,2024-06-30,Bullish,8.01,8.11,-0.1,True,False,gemma-4-26b-a4b-it
@@ -34,6 +46,7 @@ GEV,GE Vernova Inc.,2024-07-24,2024-06-30,Neutral,69.69,8.11,61.58,,,gemma-4-26b
 GOOG,Alphabet Inc.,2024-07-24,2024-06-30,Bullish,-4.2,8.11,-12.31,False,False,gemma-4-26b-a4b-it
 GOOGL,Alphabet Inc.,2024-07-24,2024-06-30,Bullish,-4.21,8.11,-12.32,False,False,gemma-4-26b-a4b-it
 LII,LENNOX INTERNATIONAL INC,2024-07-24,2024-06-30,Bullish,10.04,8.11,1.94,True,True,gemma-4-26b-a4b-it
+MCO,MOODYS CORP /DE/,2024-07-24,2024-06-30,Bullish,8.02,8.11,-0.09,True,False,gemma-4-26b-a4b-it
 NEE,NEXTERA ENERGY INC,2024-07-24,2024-06-30,Neutral,11.71,8.11,3.6,,,gemma-4-26b-a4b-it
 SLB,SLB LIMITED/NV,2024-07-24,2024-06-30,Bullish,-12.13,8.11,-20.24,False,False,gemma-4-26b-a4b-it
 TSLA,"Tesla, Inc.",2024-07-24,2024-06-30,Neutral,0.92,8.11,-7.19,,,gemma-4-26b-a4b-it
@@ -46,6 +59,7 @@ CBRE,"CBRE GROUP, INC.",2024-07-25,2024-06-30,Neutral,14.6,7.68,6.92,,,gemma-4-2
 CINF,CINCINNATI FINANCIAL CORP,2024-07-25,2024-06-30,Neutral,16.13,7.68,8.45,,,gemma-4-26b-a4b-it
 CMG,CHIPOTLE MEXICAN GRILL INC,2024-07-25,2024-06-30,Bullish,16.14,7.68,8.45,True,True,gemma-4-26b-a4b-it
 CMS,CMS ENERGY CORP,2024-07-25,2024-06-30,Neutral,14.96,7.68,7.28,,,gemma-4-26b-a4b-it
+CSGP,"COSTAR GROUP, INC.",2024-07-25,2024-06-30,Neutral,-6.45,7.68,-14.13,,,gemma-4-26b-a4b-it
 DOV,DOVER Corp,2024-07-25,2024-06-30,Bullish,3.17,7.68,-4.51,True,False,gemma-4-26b-a4b-it
 DTE,DTE ENERGY CO,2024-07-25,2024-06-30,Bullish,10.88,7.68,3.2,True,True,gemma-4-26b-a4b-it
 DXCM,DEXCOM INC,2024-07-25,2024-06-30,Bullish,-32.8,7.68,-40.48,False,False,gemma-4-26b-a4b-it
@@ -64,12 +78,14 @@ MAS,MASCO CORP /DE/,2024-07-25,2024-06-30,Neutral,8.47,7.68,0.79,,,gemma-4-26b-a
 NEM,NEWMONT Corp /DE/,2024-07-25,2024-06-30,Bullish,26.96,7.68,19.28,True,True,gemma-4-26b-a4b-it
 NOC,NORTHROP GRUMMAN CORP /DE/,2024-07-25,2024-06-30,Bullish,10.17,7.68,2.49,True,True,gemma-4-26b-a4b-it
 NOW,"ServiceNow, Inc.",2024-07-25,2024-06-30,Bullish,9.52,7.68,1.84,True,True,gemma-4-26b-a4b-it
+OTIS,Otis Worldwide Corp,2024-07-25,2024-06-30,Neutral,11.03,7.68,3.35,,,gemma-4-26b-a4b-it
 PCG,PG&E Corp,2024-07-25,2024-06-30,Bearish,14.26,7.68,6.58,False,False,gemma-4-26b-a4b-it
 PM,Philip Morris International Inc.,2024-07-25,2024-06-30,Bullish,17.39,7.68,9.71,True,True,gemma-4-26b-a4b-it
 RCL,ROYAL CARIBBEAN CRUISES LTD,2024-07-25,2024-06-30,Bullish,32.62,7.68,24.94,True,True,gemma-4-26b-a4b-it
 ROL,ROLLINS INC,2024-07-25,2024-06-30,Bullish,6.8,7.68,-0.88,True,False,gemma-4-26b-a4b-it
 RSG,"REPUBLIC SERVICES, INC.",2024-07-25,2024-06-30,Bullish,8.04,7.68,0.36,True,True,gemma-4-26b-a4b-it
 RTX,RTX Corp,2024-07-25,2024-06-30,Bearish,12.71,7.68,5.03,False,False,gemma-4-26b-a4b-it
+T,AT&T INC.,2024-07-25,2024-06-30,Bearish,18.7,7.68,11.02,False,False,gemma-4-26b-a4b-it
 UNP,UNION PACIFIC CORP,2024-07-25,2024-06-30,Neutral,3.09,7.68,-4.59,,,gemma-4-26b-a4b-it
 VLO,VALERO ENERGY CORP/TX,2024-07-25,2024-06-30,Neutral,-14.79,7.68,-22.47,,,gemma-4-26b-a4b-it
 VRSN,VERISIGN INC/CA,2024-07-25,2024-06-30,Neutral,5.1,7.68,-2.58,,,gemma-4-26b-a4b-it
@@ -79,18 +95,24 @@ WST,WEST PHARMACEUTICAL SERVICES INC,2024-07-25,2024-06-30,Bearish,3.42,7.68,-4.
 WTW,WILLIS TOWERS WATSON PLC,2024-07-25,2024-06-30,Bullish,5.48,7.68,-2.21,True,False,gemma-4-26b-a4b-it
 AJG,Arthur J. Gallagher & Co.,2024-07-26,2024-06-30,Bullish,1.61,6.72,-5.11,True,False,gemma-4-26b-a4b-it
 AON,Aon plc,2024-07-26,2024-06-30,Neutral,10.71,6.72,3.99,,,gemma-4-26b-a4b-it
+APH,AMPHENOL CORP /DE/,2024-07-26,2024-06-30,Bullish,9.59,6.72,2.87,True,True,gemma-4-26b-a4b-it
 BEN,FRANKLIN TEMPLETON INC,2024-07-26,2024-06-30,Neutral,-11.02,6.72,-17.74,,,gemma-4-26b-a4b-it
 BKR,Baker Hughes Co,2024-07-26,2024-06-30,Bullish,-1.71,6.72,-8.43,False,False,gemma-4-26b-a4b-it
 BMY,BRISTOL MYERS SQUIBB CO,2024-07-26,2024-06-30,Neutral,6.07,6.72,-0.65,,,gemma-4-26b-a4b-it
+CB,Chubb Ltd,2024-07-26,2024-06-30,Bullish,9.19,6.72,2.48,True,True,gemma-4-26b-a4b-it
+CHTR,"CHARTER COMMUNICATIONS, INC. /MO/",2024-07-26,2024-06-30,Neutral,-9.68,6.72,-16.4,,,gemma-4-26b-a4b-it
+CL,COLGATE PALMOLIVE CO,2024-07-26,2024-06-30,Neutral,0.85,6.72,-5.86,,,gemma-4-26b-a4b-it
 CNC,CENTENE CORP,2024-07-26,2024-06-30,Neutral,-15.7,6.72,-22.42,,,gemma-4-26b-a4b-it
 DOC,"HEALTHPEAK PROPERTIES, INC.",2024-07-26,2024-06-30,Bullish,6.51,6.72,-0.21,True,False,gemma-4-26b-a4b-it
 DOW,DOW INC.,2024-07-26,2024-06-30,Neutral,-2.27,6.72,-8.99,,,gemma-4-26b-a4b-it
 FLEX,FLEX LTD.,2024-07-26,2024-06-28,Bullish,9.31,6.72,2.59,True,True,gemma-4-26b-a4b-it
 IP,INTERNATIONAL PAPER CO /NEW/,2024-07-26,2024-06-30,Bearish,4.72,6.72,-2.0,False,True,gemma-4-26b-a4b-it
+JBHT,HUNT J B TRANSPORT SERVICES INC,2024-07-26,2024-06-30,Neutral,2.75,6.72,-3.97,,,gemma-4-26b-a4b-it
 KEY,KEYCORP /NEW/,2024-07-26,2024-06-30,Bearish,5.96,6.72,-0.76,False,True,gemma-4-26b-a4b-it
 LHX,"L3HARRIS TECHNOLOGIES, INC. /DE/",2024-07-26,2024-06-28,Bullish,6.97,6.72,0.25,True,True,gemma-4-26b-a4b-it
 LVS,LAS VEGAS SANDS CORP,2024-07-26,2024-06-30,Bullish,34.63,6.72,27.91,True,True,gemma-4-26b-a4b-it
 MMM,3M CO,2024-07-26,2024-06-30,Bearish,-0.01,6.72,-6.72,True,True,gemma-4-26b-a4b-it
+NSC,NORFOLK SOUTHERN CORP,2024-07-26,2024-06-30,Bullish,3.07,6.72,-3.65,True,False,gemma-4-26b-a4b-it
 PLD,"Prologis, Inc.",2024-07-26,2024-06-30,Neutral,-1.14,6.72,-7.85,,,gemma-4-26b-a4b-it
 TROW,PRICE T ROWE GROUP INC,2024-07-26,2024-06-30,Neutral,1.13,6.72,-5.58,,,gemma-4-26b-a4b-it
 VLTO,Veralto Corp,2024-07-26,2024-06-28,Neutral,0.96,6.72,-5.76,,,gemma-4-26b-a4b-it
@@ -99,12 +121,16 @@ WY,WEYERHAEUSER CO,2024-07-26,2024-06-30,Neutral,2.35,6.72,-4.37,,,gemma-4-26b-a
 EXE,EXPAND ENERGY Corp,2024-07-29,2024-06-30,Bearish,12.24,6.95,5.3,False,False,gemma-4-26b-a4b-it
 HAL,HALLIBURTON CO,2024-07-29,2024-06-30,Neutral,-17.21,6.95,-24.16,,,gemma-4-26b-a4b-it
 HCA,"HCA Healthcare, Inc.",2024-07-29,2024-06-30,Bullish,-0.43,6.95,-7.38,False,False,gemma-4-26b-a4b-it
+KO,COCA COLA CO,2024-07-29,2024-06-28,Bullish,0.44,6.95,-6.5,True,False,gemma-4-26b-a4b-it
 L,LOEWS CORP,2024-07-29,2024-06-30,Neutral,2.31,6.95,-4.63,,,gemma-4-26b-a4b-it
 LUV,SOUTHWEST AIRLINES CO,2024-07-29,2024-06-30,Bearish,15.87,6.95,8.92,False,False,gemma-4-26b-a4b-it
 ON,ON SEMICONDUCTOR CORP,2024-07-29,2024-06-28,Neutral,-7.7,6.95,-14.65,,,gemma-4-26b-a4b-it
 TDY,TELEDYNE TECHNOLOGIES INC,2024-07-29,2024-06-30,Neutral,10.33,6.95,3.38,,,gemma-4-26b-a4b-it
 TEL,TE Connectivity plc,2024-07-29,2024-06-28,Bullish,-2.73,6.95,-9.67,False,False,gemma-4-26b-a4b-it
+ADM,Archer-Daniels-Midland Co,2024-07-30,2024-06-30,Bearish,-7.63,7.49,-15.13,True,True,gemma-4-26b-a4b-it
 AEP,AMERICAN ELECTRIC POWER CO INC,2024-07-30,2024-06-30,Neutral,1.9,7.49,-5.59,,,gemma-4-26b-a4b-it
+AMT,AMERICAN TOWER CORP /MA/,2024-07-30,2024-06-30,Neutral,0.35,7.49,-7.14,,,gemma-4-26b-a4b-it
+AVY,Avery Dennison Corp,2024-07-30,2024-06-29,Bullish,-3.67,7.49,-11.16,False,False,gemma-4-26b-a4b-it
 BAC,BANK OF AMERICA CORP /DE/,2024-07-30,2024-06-30,Neutral,3.92,7.49,-3.57,,,gemma-4-26b-a4b-it
 CCI,CROWN CASTLE INC.,2024-07-30,2024-06-30,Neutral,0.99,7.49,-6.5,,,gemma-4-26b-a4b-it
 CNP,CENTERPOINT ENERGY INC,2024-07-30,2024-06-30,Bearish,5.17,7.49,-2.33,False,True,gemma-4-26b-a4b-it
@@ -120,6 +146,7 @@ LYV,"Live Nation Entertainment, Inc.",2024-07-30,2024-06-30,Neutral,25.16,7.49,1
 MDLZ,"Mondelez International, Inc.",2024-07-30,2024-06-30,Bearish,4.37,7.49,-3.12,False,True,gemma-4-26b-a4b-it
 PEG,PUBLIC SERVICE ENTERPRISE GROUP INC,2024-07-30,2024-06-30,Neutral,16.8,7.49,9.31,,,gemma-4-26b-a4b-it
 PSA,Public Storage,2024-07-30,2024-06-30,Bearish,11.52,7.49,4.03,False,False,gemma-4-26b-a4b-it
+PYPL,"PayPal Holdings, Inc.",2024-07-30,2024-06-30,Bullish,30.61,7.49,23.12,True,True,gemma-4-26b-a4b-it
 SBUX,STARBUCKS CORP,2024-07-30,2024-06-30,Neutral,29.86,7.49,22.36,,,gemma-4-26b-a4b-it
 SPGI,S&P Global Inc.,2024-07-30,2024-06-30,Bullish,-0.08,7.49,-7.57,False,False,gemma-4-26b-a4b-it
 SWK,"STANLEY BLACK & DECKER, INC.",2024-07-30,2024-06-29,Neutral,-2.17,7.49,-9.66,,,gemma-4-26b-a4b-it
@@ -128,10 +155,14 @@ WELL,WELLTOWER INC.,2024-07-30,2024-06-30,Neutral,17.0,7.49,9.51,,,gemma-4-26b-a
 XYL,Xylem Inc.,2024-07-30,2024-06-30,Bullish,-1.75,7.49,-9.25,False,False,gemma-4-26b-a4b-it
 ZBRA,ZEBRA TECHNOLOGIES CORP,2024-07-30,2024-06-29,Neutral,4.44,7.49,-3.05,,,gemma-4-26b-a4b-it
 ABT,ABBOTT LABORATORIES,2024-07-31,2024-06-30,Neutral,7.55,5.94,1.6,,,gemma-4-26b-a4b-it
+ALB,ALBEMARLE CORP,2024-07-31,2024-06-30,Bearish,3.66,5.94,-2.29,False,True,gemma-4-26b-a4b-it
 ALL,ALLSTATE CORP,2024-07-31,2024-06-30,Neutral,9.56,5.94,3.62,,,gemma-4-26b-a4b-it
+AMD,ADVANCED MICRO DEVICES INC,2024-07-31,2024-06-29,Neutral,15.07,5.94,9.12,,,gemma-4-26b-a4b-it
 ANET,"Arista Networks, Inc.",2024-07-31,2024-06-30,Bullish,15.88,5.94,9.93,True,True,gemma-4-26b-a4b-it
 AWK,"American Water Works Company, Inc.",2024-07-31,2024-06-30,Neutral,-4.09,5.94,-10.04,,,gemma-4-26b-a4b-it
 BA,BOEING CO,2024-07-31,2024-06-30,Bearish,-19.74,5.94,-25.68,True,True,gemma-4-26b-a4b-it
+CDW,CDW Corp,2024-07-31,2024-06-30,Neutral,1.09,5.94,-4.85,,,gemma-4-26b-a4b-it
+COR,"Cencora, Inc.",2024-07-31,2024-06-30,Neutral,-2.36,5.94,-8.3,,,gemma-4-26b-a4b-it
 CVNA,CARVANA CO.,2024-07-31,2024-06-30,Neutral,56.68,5.94,50.73,,,gemma-4-26b-a4b-it
 DD,"DuPont de Nemours, Inc.",2024-07-31,2024-06-30,Neutral,0.15,5.94,-5.8,,,gemma-4-26b-a4b-it
 ESS,"ESSEX PROPERTY TRUST, INC.",2024-07-31,2024-06-30,Neutral,8.11,5.94,2.16,,,gemma-4-26b-a4b-it
@@ -139,21 +170,28 @@ EW,Edwards Lifesciences Corp,2024-07-31,2024-06-30,Bullish,10.02,5.94,4.08,True,
 FICO,FAIR ISAAC CORP,2024-07-31,2024-06-30,Bullish,26.37,5.94,20.42,True,True,gemma-4-26b-a4b-it
 GEHC,GE HealthCare Technologies Inc.,2024-07-31,2024-06-30,Neutral,0.79,5.94,-5.16,,,gemma-4-26b-a4b-it
 GRMN,GARMIN LTD,2024-07-31,2024-06-29,Bullish,-2.51,5.94,-8.45,False,False,gemma-4-26b-a4b-it
+HAS,"HASBRO, INC.",2024-07-31,2024-06-30,Bearish,2.91,5.94,-3.04,False,True,gemma-4-26b-a4b-it
 HUBB,HUBBELL INC,2024-07-31,2024-06-30,Neutral,11.58,5.94,5.64,,,gemma-4-26b-a4b-it
 HUM,HUMANA INC,2024-07-31,2024-06-30,Bearish,-28.52,5.94,-34.46,True,True,gemma-4-26b-a4b-it
 IVZ,Invesco Ltd.,2024-07-31,2024-06-30,Neutral,5.16,5.94,-0.78,,,gemma-4-26b-a4b-it
 JCI,Johnson Controls International plc,2024-07-31,2024-06-30,Neutral,8.26,5.94,2.32,,,gemma-4-26b-a4b-it
 KHC,Kraft Heinz Co,2024-07-31,2024-06-29,Bearish,-0.03,5.94,-5.98,True,True,gemma-4-26b-a4b-it
+MA,Mastercard Inc,2024-07-31,2024-06-30,Bullish,9.33,5.94,3.38,True,True,gemma-4-26b-a4b-it
 MAR,MARRIOTT INTERNATIONAL INC /MD/,2024-07-31,2024-06-30,Bearish,16.43,5.94,10.48,False,False,gemma-4-26b-a4b-it
 MGM,MGM Resorts International,2024-07-31,2024-06-30,Neutral,-2.28,5.94,-8.23,,,gemma-4-26b-a4b-it
+MO,"ALTRIA GROUP, INC.",2024-07-31,2024-06-30,Bearish,3.92,5.94,-2.03,False,True,gemma-4-26b-a4b-it
+PCAR,PACCAR INC,2024-07-31,2024-06-30,Neutral,8.47,5.94,2.52,,,gemma-4-26b-a4b-it
 PFG,PRINCIPAL FINANCIAL GROUP INC,2024-07-31,2024-06-30,Neutral,4.18,5.94,-1.77,,,gemma-4-26b-a4b-it
 PSX,Phillips 66,2024-07-31,2024-06-30,Neutral,-14.56,5.94,-20.51,,,gemma-4-26b-a4b-it
 QCOM,QUALCOMM INC/DE,2024-07-31,2024-06-23,Bullish,-2.23,5.94,-8.18,False,False,gemma-4-26b-a4b-it
 SWKS,"SKYWORKS SOLUTIONS, INC.",2024-07-31,2024-06-28,Neutral,-13.16,5.94,-19.1,,,gemma-4-26b-a4b-it
 SYK,STRYKER CORP,2024-07-31,2024-06-30,Bullish,9.88,5.94,3.94,True,True,gemma-4-26b-a4b-it
+TMUS,"T-Mobile US, Inc.",2024-07-31,2024-06-30,Bullish,24.42,5.94,18.47,True,True,gemma-4-26b-a4b-it
 TT,Trane Technologies plc,2024-07-31,2024-06-30,Bullish,17.13,5.94,11.19,True,True,gemma-4-26b-a4b-it
+TYL,TYLER TECHNOLOGIES INC,2024-07-31,2024-06-30,Bullish,7.99,5.94,2.04,True,True,gemma-4-26b-a4b-it
 UDR,"UDR, Inc.",2024-07-31,2024-06-30,Neutral,9.89,5.94,3.95,,,gemma-4-26b-a4b-it
 VICI,VICI PROPERTIES INC.,2024-07-31,2024-06-30,Neutral,4.64,5.94,-1.31,,,gemma-4-26b-a4b-it
+VRSK,"Verisk Analytics, Inc.",2024-07-31,2024-06-30,Bullish,0.87,5.94,-5.07,True,False,gemma-4-26b-a4b-it
 WAT,WATERS CORP /DE/,2024-07-31,2024-06-29,Neutral,-3.45,5.94,-9.4,,,gemma-4-26b-a4b-it
 WEC,"WEC ENERGY GROUP, INC.",2024-07-31,2024-06-30,Neutral,11.82,5.94,5.87,,,gemma-4-26b-a4b-it
 AES,AES CORP,2024-08-01,2024-06-30,Bearish,-8.32,7.14,-15.46,True,True,gemma-4-26b-a4b-it
@@ -166,7 +204,10 @@ BALL,BALL Corp,2024-08-01,2024-06-30,Neutral,-0.23,7.14,-7.37,,,gemma-4-26b-a4b-
 BDX,BECTON DICKINSON & CO,2024-08-01,2024-06-30,Bullish,0.67,7.14,-6.48,True,False,gemma-4-26b-a4b-it
 BG,Bunge Global SA,2024-08-01,2024-06-30,Bearish,-16.11,7.14,-23.25,True,True,gemma-4-26b-a4b-it
 BIIB,BIOGEN INC.,2024-08-01,2024-06-30,Neutral,-14.01,7.14,-21.15,,,gemma-4-26b-a4b-it
+BKNG,Booking Holdings Inc.,2024-08-01,2024-06-30,Bullish,22.11,7.14,14.97,True,True,gemma-4-26b-a4b-it
 BSX,BOSTON SCIENTIFIC CORP,2024-08-01,2024-06-30,Neutral,11.75,7.14,4.61,,,gemma-4-26b-a4b-it
+CI,Cigna Group,2024-08-01,2024-06-30,Bearish,-5.56,7.14,-12.71,True,True,gemma-4-26b-a4b-it
+CMI,CUMMINS INC,2024-08-01,2024-06-30,Bearish,9.06,7.14,1.92,False,False,gemma-4-26b-a4b-it
 COF,CAPITAL ONE FINANCIAL CORP,2024-08-01,2024-06-30,Neutral,16.42,7.14,9.28,,,gemma-4-26b-a4b-it
 COIN,"Coinbase Global, Inc.",2024-08-01,2024-06-30,Bullish,-0.42,7.14,-7.56,False,False,gemma-4-26b-a4b-it
 COP,CONOCOPHILLIPS,2024-08-01,2024-06-30,Bearish,-4.3,7.14,-11.45,True,True,gemma-4-26b-a4b-it
@@ -179,6 +220,7 @@ EBAY,EBAY INC,2024-08-01,2024-06-30,Neutral,11.9,7.14,4.76,,,gemma-4-26b-a4b-it
 ED,CONSOLIDATED EDISON INC,2024-08-01,2024-06-30,Bearish,3.35,7.14,-3.79,False,True,gemma-4-26b-a4b-it
 EOG,EOG RESOURCES INC,2024-08-01,2024-06-30,Bullish,-1.4,7.14,-8.54,False,False,gemma-4-26b-a4b-it
 ETN,Eaton Corp plc,2024-08-01,2024-06-30,Bullish,15.47,7.14,8.33,True,True,gemma-4-26b-a4b-it
+EXC,EXELON CORP,2024-08-01,2024-06-30,Neutral,4.83,7.14,-2.31,,,gemma-4-26b-a4b-it
 FRT,FEDERAL REALTY INVESTMENT TRUST,2024-08-01,2024-06-30,Bullish,2.26,7.14,-4.88,True,False,gemma-4-26b-a4b-it
 GWW,"W.W. GRAINGER, INC.",2024-08-01,2024-06-30,Neutral,16.9,7.14,9.76,,,gemma-4-26b-a4b-it
 HII,"HUNTINGTON INGALLS INDUSTRIES, INC.",2024-08-01,2024-06-30,Neutral,-5.75,7.14,-12.89,,,gemma-4-26b-a4b-it
@@ -186,18 +228,26 @@ HSY,HERSHEY CO,2024-08-01,2024-06-30,Bearish,-10.46,7.14,-17.6,True,True,gemma-4
 ICE,"Intercontinental Exchange, Inc.",2024-08-01,2024-06-30,Bullish,10.59,7.14,3.45,True,True,gemma-4-26b-a4b-it
 IEX,IDEX CORP /DE/,2024-08-01,2024-06-30,Neutral,11.76,7.14,4.61,,,gemma-4-26b-a4b-it
 IRM,IRON MOUNTAIN INC,2024-08-01,2024-06-30,Neutral,17.24,7.14,10.1,,,gemma-4-26b-a4b-it
+MAA,MID AMERICA APARTMENT COMMUNITIES INC.,2024-08-01,2024-06-30,Neutral,4.93,7.14,-2.22,,,gemma-4-26b-a4b-it
 MCHP,MICROCHIP TECHNOLOGY INC,2024-08-01,2024-06-30,Bearish,-9.92,7.14,-17.07,True,True,gemma-4-26b-a4b-it
 MET,METLIFE INC,2024-08-01,2024-06-30,Bullish,10.65,7.14,3.51,True,True,gemma-4-26b-a4b-it
+META,"Meta Platforms, Inc.",2024-08-01,2024-06-30,Bullish,19.01,7.14,11.87,True,True,gemma-4-26b-a4b-it
 MRNA,"Moderna, Inc.",2024-08-01,2024-06-30,Bearish,-41.89,7.14,-49.03,True,True,gemma-4-26b-a4b-it
+MSI,"Motorola Solutions, Inc.",2024-08-01,2024-06-29,Bullish,13.91,7.14,6.77,True,True,gemma-4-26b-a4b-it
 NTRS,NORTHERN TRUST CORP,2024-08-01,2024-06-30,Neutral,17.75,7.14,10.61,,,gemma-4-26b-a4b-it
 PNW,PINNACLE WEST CAPITAL CORP,2024-08-01,2024-06-30,Neutral,-0.61,7.14,-7.75,,,gemma-4-26b-a4b-it
+PWR,"QUANTA SERVICES, INC.",2024-08-01,2024-06-30,Bullish,22.3,7.14,15.16,True,True,gemma-4-26b-a4b-it
 REGN,"REGENERON PHARMACEUTICALS, INC.",2024-08-01,2024-06-30,Bullish,-15.58,7.14,-22.73,False,False,gemma-4-26b-a4b-it
+ROP,ROPER TECHNOLOGIES INC,2024-08-01,2024-06-30,Neutral,0.66,7.14,-6.48,,,gemma-4-26b-a4b-it
+SO,SOUTHERN CO,2024-08-01,2024-06-30,Bullish,2.89,7.14,-4.25,True,False,gemma-4-26b-a4b-it
+STT,STATE STREET CORP,2024-08-01,2024-06-30,Neutral,12.08,7.14,4.94,,,gemma-4-26b-a4b-it
 TRGP,Targa Resources Corp.,2024-08-01,2024-06-30,Neutral,22.43,7.14,15.29,,,gemma-4-26b-a4b-it
 VMRK,VIVMARK RESIDENTIAL,2024-08-01,2024-06-30,Bullish,5.56,7.14,-1.58,True,False,gemma-4-26b-a4b-it
 WFC,WELLS FARGO & COMPANY/MN,2024-08-01,2024-06-30,Neutral,15.87,7.14,8.73,,,gemma-4-26b-a4b-it
 XEL,XCEL ENERGY INC,2024-08-01,2024-06-30,Neutral,7.59,7.14,0.45,,,gemma-4-26b-a4b-it
 XYZ,"Block, Inc.",2024-08-01,2024-06-30,Neutral,22.35,7.14,15.21,,,gemma-4-26b-a4b-it
 AAPL,Apple Inc.,2024-08-02,2024-06-29,Bullish,2.87,7.03,-4.16,True,False,gemma-4-26b-a4b-it
+ALGN,ALIGN TECHNOLOGY INC,2024-08-02,2024-06-30,Bearish,-3.96,7.03,-11.0,True,True,gemma-4-26b-a4b-it
 AMZN,AMAZON COM INC,2024-08-02,2024-06-30,Bullish,11.02,7.03,3.98,True,True,gemma-4-26b-a4b-it
 APA,APA Corp,2024-08-02,2024-06-30,Neutral,-16.62,7.03,-23.66,,,gemma-4-26b-a4b-it
 BNY,Bank of New York Mellon Corp,2024-08-02,2024-06-30,Neutral,20.13,7.03,13.09,,,gemma-4-26b-a4b-it
@@ -209,7 +259,10 @@ CHRW,"C. H. ROBINSON WORLDWIDE, INC.",2024-08-02,2024-06-30,Neutral,5.11,7.03,-1
 CPT,CAMDEN PROPERTY TRUST,2024-08-02,2024-06-30,Neutral,-1.22,7.03,-8.25,,,gemma-4-26b-a4b-it
 DLR,"DIGITAL REALTY TRUST, INC.",2024-08-02,2024-06-30,Bearish,19.06,7.03,12.03,False,False,gemma-4-26b-a4b-it
 ECL,ECOLAB INC.,2024-08-02,2024-06-30,Bullish,3.83,7.03,-3.2,True,False,gemma-4-26b-a4b-it
+EG,"EVEREST GROUP, LTD.",2024-08-02,2024-06-30,Neutral,-1.83,7.03,-8.86,,,gemma-4-26b-a4b-it
 ES,EVERSOURCE ENERGY,2024-08-02,2024-06-30,Neutral,-0.82,7.03,-7.86,,,gemma-4-26b-a4b-it
+ETR,ENTERGY CORP /DE/,2024-08-02,2024-06-30,Bullish,29.37,7.03,22.34,True,True,gemma-4-26b-a4b-it
+EXR,Extra Space Storage Inc.,2024-08-02,2024-06-30,Neutral,-0.09,7.03,-7.12,,,gemma-4-26b-a4b-it
 GDDY,GoDaddy Inc.,2024-08-02,2024-06-30,Neutral,10.28,7.03,3.25,,,gemma-4-26b-a4b-it
 GLW,CORNING INC /NY,2024-08-02,2024-06-30,Bearish,23.04,7.03,16.0,False,False,gemma-4-26b-a4b-it
 GS,GOLDMAN SACHS GROUP INC,2024-08-02,2024-06-30,Bullish,10.67,7.03,3.64,True,True,gemma-4-26b-a4b-it
@@ -217,23 +270,36 @@ HST,"HOST HOTELS & RESORTS, INC.",2024-08-02,2024-06-30,Bullish,7.61,7.03,0.57,T
 INTC,INTEL CORP,2024-08-02,2024-06-29,Bearish,0.82,7.03,-6.21,False,True,gemma-4-26b-a4b-it
 IR,Ingersoll Rand Inc.,2024-08-02,2024-06-30,Neutral,9.84,7.03,2.8,,,gemma-4-26b-a4b-it
 ITW,ILLINOIS TOOL WORKS INC,2024-08-02,2024-06-30,Neutral,7.7,7.03,0.66,,,gemma-4-26b-a4b-it
+JPM,JPMORGAN CHASE & CO,2024-08-02,2024-06-30,Neutral,12.12,7.03,5.09,,,gemma-4-26b-a4b-it
 KIM,KIMCO REALTY CORP,2024-08-02,2024-06-30,Bullish,9.29,7.03,2.25,True,True,gemma-4-26b-a4b-it
 LH,LABCORP HOLDINGS INC.,2024-08-02,2024-06-30,Bullish,-2.97,7.03,-10.01,False,False,gemma-4-26b-a4b-it
 LIN,LINDE PLC,2024-08-02,2024-06-30,Bullish,0.77,7.03,-6.26,True,False,gemma-4-26b-a4b-it
 LNT,ALLIANT ENERGY CORP,2024-08-02,2024-06-30,Bearish,5.92,7.03,-1.12,False,True,gemma-4-26b-a4b-it
+LYB,LyondellBasell Industries N.V.,2024-08-02,2024-06-30,Neutral,-6.72,7.03,-13.75,,,gemma-4-26b-a4b-it
 MPWR,"MONOLITHIC POWER SYSTEMS, INC.",2024-08-02,2024-06-30,Neutral,-4.45,7.03,-11.49,,,gemma-4-26b-a4b-it
+MTD,METTLER TOLEDO INTERNATIONAL INC/,2024-08-02,2024-06-30,Neutral,-10.38,7.03,-17.42,,,gemma-4-26b-a4b-it
 PNC,"PNC FINANCIAL SERVICES GROUP, INC.",2024-08-02,2024-06-30,Neutral,11.68,7.03,4.64,,,gemma-4-26b-a4b-it
+PPL,PPL Corp,2024-08-02,2024-06-30,Bullish,7.12,7.03,0.08,True,True,gemma-4-26b-a4b-it
+PRU,PRUDENTIAL FINANCIAL INC,2024-08-02,2024-06-30,Neutral,12.34,7.03,5.31,,,gemma-4-26b-a4b-it
 PTC,PTC INC.,2024-08-02,2024-06-30,Neutral,7.72,7.03,0.68,,,gemma-4-26b-a4b-it
+REG,REGENCY CENTERS CORP,2024-08-02,2024-06-30,Bullish,2.56,7.03,-4.47,True,False,gemma-4-26b-a4b-it
+SBAC,SBA COMMUNICATIONS CORP,2024-08-02,2024-06-30,Neutral,0.34,7.03,-6.7,,,gemma-4-26b-a4b-it
 TER,"TERADYNE, INC",2024-08-02,2024-06-30,Bullish,-9.35,7.03,-16.38,False,False,gemma-4-26b-a4b-it
+TMO,THERMO FISHER SCIENTIFIC INC.,2024-08-02,2024-06-29,Bullish,-11.21,7.03,-18.24,False,False,gemma-4-26b-a4b-it
 VRTX,VERTEX PHARMACEUTICALS INC / MA,2024-08-02,2024-06-30,Bullish,-3.74,7.03,-10.77,False,False,gemma-4-26b-a4b-it
 VTR,"Ventas, Inc.",2024-08-02,2024-06-30,Bullish,16.94,7.03,9.9,True,True,gemma-4-26b-a4b-it
 WRB,BERKLEY W R CORP,2024-08-02,2024-06-30,Neutral,4.2,7.03,-2.83,,,gemma-4-26b-a4b-it
+AEE,AMEREN CORP,2024-08-05,2024-06-30,Neutral,8.12,10.47,-2.35,,,gemma-4-26b-a4b-it
 BRK-B,BERKSHIRE HATHAWAY INC,2024-08-05,2024-06-30,Neutral,6.91,10.47,-3.57,,,gemma-4-26b-a4b-it
+BXP,"BXP, Inc.",2024-08-05,2024-06-30,Neutral,23.86,10.47,13.39,,,gemma-4-26b-a4b-it
 CME,CME GROUP INC.,2024-08-05,2024-06-30,Neutral,13.71,10.47,3.23,,,gemma-4-26b-a4b-it
 CSX,CSX CORP,2024-08-05,2024-06-30,Neutral,1.45,10.47,-9.02,,,gemma-4-26b-a4b-it
 IBKR,"Interactive Brokers Group, Inc.",2024-08-05,2024-06-30,Bullish,41.95,10.47,31.48,True,True,gemma-4-26b-a4b-it
 MRK,"Merck & Co., Inc.",2024-08-05,2024-06-30,Neutral,-8.69,10.47,-19.16,,,gemma-4-26b-a4b-it
+MS,MORGAN STANLEY,2024-08-05,2024-06-30,Bullish,27.14,10.47,16.67,True,True,gemma-4-26b-a4b-it
+MTB,M&T BANK CORP,2024-08-05,2024-06-30,Neutral,20.13,10.47,9.66,,,gemma-4-26b-a4b-it
 ODFL,"OLD DOMINION FREIGHT LINE, INC.",2024-08-05,2024-06-30,Bullish,5.15,10.47,-5.32,True,False,gemma-4-26b-a4b-it
+PFE,PFIZER INC,2024-08-05,2024-06-30,Bearish,-6.66,10.47,-17.13,True,True,gemma-4-26b-a4b-it
 PGR,PROGRESSIVE CORP/OH/,2024-08-05,2024-06-30,Bullish,14.54,10.47,4.07,True,True,gemma-4-26b-a4b-it
 TSN,"TYSON FOODS, INC.",2024-08-05,2024-06-29,Bearish,-5.99,10.47,-16.46,True,True,gemma-4-26b-a4b-it
 WMB,"WILLIAMS COMPANIES, INC.",2024-08-05,2024-06-30,Neutral,27.78,10.47,17.31,,,gemma-4-26b-a4b-it
@@ -241,6 +307,7 @@ ABNB,"Airbnb, Inc.",2024-08-06,2024-06-30,Bearish,4.91,9.46,-4.56,False,True,gem
 ACGL,ARCH CAPITAL GROUP LTD.,2024-08-06,2024-06-30,Bullish,-1.7,9.46,-11.16,False,False,gemma-4-26b-a4b-it
 AMP,AMERIPRISE FINANCIAL INC,2024-08-06,2024-06-30,Neutral,28.44,9.46,18.98,,,gemma-4-26b-a4b-it
 BAX,BAXTER INTERNATIONAL INC,2024-08-06,2024-06-30,Bearish,-2.29,9.46,-11.75,True,True,gemma-4-26b-a4b-it
+CEG,Constellation Energy Corp,2024-08-06,2024-06-30,Neutral,25.04,9.46,15.58,,,gemma-4-26b-a4b-it
 CFG,CITIZENS FINANCIAL GROUP INC/RI,2024-08-06,2024-06-30,Neutral,8.13,9.46,-1.33,,,gemma-4-26b-a4b-it
 DUK,Duke Energy CORP,2024-08-06,2024-06-30,Neutral,0.57,9.46,-8.89,,,gemma-4-26b-a4b-it
 DVA,DAVITA INC.,2024-08-06,2024-06-30,Bullish,5.8,9.46,-3.66,True,False,gemma-4-26b-a4b-it
@@ -249,19 +316,25 @@ FIS,"Fidelity National Information Services, Inc.",2024-08-06,2024-06-30,Neutral
 FITB,FIFTH THIRD BANCORP,2024-08-06,2024-06-30,Neutral,9.73,9.46,0.27,,,gemma-4-26b-a4b-it
 GNRC,GENERAC HOLDINGS INC.,2024-08-06,2024-06-30,Bullish,22.27,9.46,12.81,True,True,gemma-4-26b-a4b-it
 HSIC,HENRY SCHEIN INC,2024-08-06,2024-06-29,Bearish,13.16,9.46,3.69,False,False,gemma-4-26b-a4b-it
+IDXX,IDEXX LABORATORIES INC /DE,2024-08-06,2024-06-30,Neutral,-11.69,9.46,-21.15,,,gemma-4-26b-a4b-it
 IFF,INTERNATIONAL FLAVORS & FRAGRANCES INC,2024-08-06,2024-06-30,Neutral,2.98,9.46,-6.48,,,gemma-4-26b-a4b-it
 J,JACOBS SOLUTIONS INC.,2024-08-06,2024-06-28,Neutral,19.22,9.46,9.76,,,gemma-4-26b-a4b-it
 KVUE,Kenvue Inc.,2024-08-06,2024-06-30,Bearish,11.52,9.46,2.06,False,False,gemma-4-26b-a4b-it
 MPC,Marathon Petroleum Corp,2024-08-06,2024-06-30,Neutral,-14.78,9.46,-24.24,,,gemma-4-26b-a4b-it
+NDAQ,"NASDAQ, INC.",2024-08-06,2024-06-30,Neutral,13.4,9.46,3.94,,,gemma-4-26b-a4b-it
 NVR,NVR INC,2024-08-06,2024-06-30,Neutral,11.42,9.46,1.96,,,gemma-4-26b-a4b-it
 O,REALTY INCOME CORP,2024-08-06,2024-06-30,Bullish,-0.63,9.46,-10.09,False,False,gemma-4-26b-a4b-it
 OKE,ONEOK INC /NEW/,2024-08-06,2024-06-30,Bullish,17.38,9.46,7.92,True,True,gemma-4-26b-a4b-it
+PLTR,Palantir Technologies Inc.,2024-08-06,2024-06-30,Bullish,55.74,9.46,46.27,True,True,gemma-4-26b-a4b-it
 RF,REGIONS FINANCIAL CORP,2024-08-06,2024-06-30,Neutral,14.27,9.46,4.81,,,gemma-4-26b-a4b-it
+RJF,RAYMOND JAMES FINANCIAL INC,2024-08-06,2024-06-30,Bullish,35.27,9.46,25.81,True,True,gemma-4-26b-a4b-it
 RVTY,"REVVITY, INC.",2024-08-06,2024-06-30,Neutral,4.05,9.46,-5.41,,,gemma-4-26b-a4b-it
+SRE,SEMPRA,2024-08-06,2024-06-30,Neutral,5.67,9.46,-3.79,,,gemma-4-26b-a4b-it
 TDG,TransDigm Group INC,2024-08-06,2024-06-29,Bullish,12.24,9.46,2.77,True,True,gemma-4-26b-a4b-it
 UBER,"Uber Technologies, Inc",2024-08-06,2024-06-30,Bullish,12.92,9.46,3.46,True,True,gemma-4-26b-a4b-it
 USB,US BANCORP \DE\,2024-08-06,2024-06-30,Neutral,14.51,9.46,5.04,,,gemma-4-26b-a4b-it
 WYNN,WYNN RESORTS LTD,2024-08-06,2024-06-30,Bearish,25.79,9.46,16.33,False,False,gemma-4-26b-a4b-it
+ZTS,Zoetis Inc.,2024-08-06,2024-06-30,Bullish,-5.23,9.46,-14.69,False,False,gemma-4-26b-a4b-it
 ABBV,AbbVie Inc.,2024-08-07,2024-06-30,Bullish,8.42,11.53,-3.12,True,False,gemma-4-26b-a4b-it
 AMGN,AMGEN INC,2024-08-07,2024-06-30,Neutral,2.88,11.53,-8.65,,,gemma-4-26b-a4b-it
 APP,AppLovin Corp,2024-08-07,2024-06-30,Bullish,145.84,11.53,134.31,True,True,gemma-4-26b-a4b-it
@@ -273,13 +346,16 @@ CRL,"CHARLES RIVER LABORATORIES INTERNATIONAL, INC.",2024-08-07,2024-06-29,Beari
 CVS,CVS HEALTH Corp,2024-08-07,2024-06-30,Neutral,-0.91,11.53,-12.44,,,gemma-4-26b-a4b-it
 CVX,CHEVRON CORP,2024-08-07,2024-06-30,Neutral,8.93,11.53,-2.6,,,gemma-4-26b-a4b-it
 DIS,Walt Disney Co,2024-08-07,2024-06-29,Bearish,12.41,11.53,0.88,False,False,gemma-4-26b-a4b-it
+DVN,DEVON ENERGY CORP/DE,2024-08-07,2024-06-30,Bearish,-7.86,11.53,-19.39,True,True,gemma-4-26b-a4b-it
 EMR,EMERSON ELECTRIC CO,2024-08-07,2024-06-30,Neutral,18.81,11.53,7.28,,,gemma-4-26b-a4b-it
 EQIX,EQUINIX INC,2024-08-07,2024-06-30,Bullish,17.09,11.53,5.56,True,True,gemma-4-26b-a4b-it
+FANG,"Diamondback Energy, Inc.",2024-08-07,2024-06-30,Bullish,-7.12,11.53,-18.65,False,False,gemma-4-26b-a4b-it
 FCX,FREEPORT-MCMORAN INC,2024-08-07,2024-06-30,Bearish,19.27,11.53,7.74,False,False,gemma-4-26b-a4b-it
 GEN,Gen Digital Inc.,2024-08-07,2024-06-28,Neutral,18.19,11.53,6.65,,,gemma-4-26b-a4b-it
 GL,GLOBE LIFE INC.,2024-08-07,2024-06-30,Neutral,17.8,11.53,6.27,,,gemma-4-26b-a4b-it
 GPN,GLOBAL PAYMENTS INC,2024-08-07,2024-06-30,Bearish,8.2,11.53,-3.33,False,True,gemma-4-26b-a4b-it
 HLT,Hilton Worldwide Holdings Inc.,2024-08-07,2024-06-30,Neutral,15.87,11.53,4.34,,,gemma-4-26b-a4b-it
+ILMN,"ILLUMINA, INC.",2024-08-07,2024-06-30,Neutral,27.96,11.53,16.43,,,gemma-4-26b-a4b-it
 MCK,MCKESSON CORP,2024-08-07,2024-06-30,Bearish,-14.83,11.53,-26.36,True,True,gemma-4-26b-a4b-it
 MOS,MOSAIC CO,2024-08-07,2024-06-30,Bearish,6.38,11.53,-5.15,False,True,gemma-4-26b-a4b-it
 NI,NISOURCE INC.,2024-08-07,2024-06-30,Neutral,14.14,11.53,2.61,,,gemma-4-26b-a4b-it
@@ -295,15 +371,21 @@ VMC,Vulcan Materials CO,2024-08-07,2024-06-30,Neutral,13.45,11.53,1.91,,,gemma-4
 WBD,"Warner Bros. Discovery, Inc.",2024-08-07,2024-06-30,Bearish,6.49,11.53,-5.05,False,True,gemma-4-26b-a4b-it
 ZBH,"ZIMMER BIOMET HOLDINGS, INC.",2024-08-07,2024-06-30,Bullish,3.17,11.53,-8.36,True,False,gemma-4-26b-a4b-it
 AIZ,"ASSURANT, INC.",2024-08-08,2024-06-30,Bullish,21.65,11.72,9.93,True,True,gemma-4-26b-a4b-it
+AKAM,AKAMAI TECHNOLOGIES INC,2024-08-08,2024-06-30,Bearish,14.35,11.72,2.63,False,False,gemma-4-26b-a4b-it
 APO,"Apollo Global Management, Inc.",2024-08-08,2024-06-30,Neutral,59.28,11.72,47.55,,,gemma-4-26b-a4b-it
 BE,Bloom Energy Corp,2024-08-08,2024-06-30,Bearish,4.08,11.72,-7.64,False,True,gemma-4-26b-a4b-it
 CF,"CF Industries Holdings, Inc.",2024-08-08,2024-06-30,Neutral,5.12,11.72,-6.61,,,gemma-4-26b-a4b-it
 CRH,CRH PUBLIC LTD CO,2024-08-08,2024-06-30,Bullish,23.08,11.72,11.36,True,True,gemma-4-26b-a4b-it
 EXPD,EXPEDITORS INTERNATIONAL OF WASHINGTON INC,2024-08-08,2024-06-30,Neutral,0.24,11.72,-11.48,,,gemma-4-26b-a4b-it
+FTNT,"Fortinet, Inc.",2024-08-08,2024-06-30,Bullish,17.75,11.72,6.03,True,True,gemma-4-26b-a4b-it
+GILD,"GILEAD SCIENCES, INC.",2024-08-08,2024-06-30,Neutral,22.43,11.72,10.71,,,gemma-4-26b-a4b-it
 HOOD,"Robinhood Markets, Inc.",2024-08-08,2024-06-30,Bullish,68.42,11.72,56.69,True,True,gemma-4-26b-a4b-it
 LLY,ELI LILLY & Co,2024-08-08,2024-06-30,Bullish,-8.03,11.72,-19.75,False,False,gemma-4-26b-a4b-it
+MCD,MCDONALDS CORP,2024-08-08,2024-06-30,Neutral,9.04,11.72,-2.68,,,gemma-4-26b-a4b-it
+MLM,MARTIN MARIETTA MATERIALS INC,2024-08-08,2024-06-30,Neutral,14.7,11.72,2.98,,,gemma-4-26b-a4b-it
 MNST,Monster Beverage Corp,2024-08-08,2024-06-30,Bearish,20.95,11.72,9.23,False,False,gemma-4-26b-a4b-it
 NCLH,Norwegian Cruise Line Holdings Ltd.,2024-08-08,2024-06-30,Neutral,78.87,11.72,67.14,,,gemma-4-26b-a4b-it
+NRG,"NRG ENERGY, INC.",2024-08-08,2024-06-30,Bullish,19.03,11.72,7.31,True,True,gemma-4-26b-a4b-it
 ORLY,O REILLY AUTOMOTIVE INC,2024-08-08,2024-06-30,Neutral,10.1,11.72,-1.62,,,gemma-4-26b-a4b-it
 PKG,PACKAGING CORP OF AMERICA,2024-08-08,2024-06-30,Neutral,23.51,11.72,11.79,,,gemma-4-26b-a4b-it
 SCHW,SCHWAB CHARLES CORP,2024-08-08,2024-06-30,Bearish,21.14,11.72,9.42,False,False,gemma-4-26b-a4b-it
@@ -313,15 +395,20 @@ TFC,TRUIST FINANCIAL CORP,2024-08-08,2024-06-30,Neutral,13.12,11.72,1.39,,,gemma
 TKO,"TKO Group Holdings, Inc.",2024-08-08,2024-06-30,Bullish,2.82,11.72,-8.9,True,False,gemma-4-26b-a4b-it
 TSCO,TRACTOR SUPPLY CO /DE/,2024-08-08,2024-06-29,Neutral,11.2,11.72,-0.52,,,gemma-4-26b-a4b-it
 UHS,UNIVERSAL HEALTH SERVICES INC,2024-08-08,2024-06-30,Neutral,-6.73,11.72,-18.46,,,gemma-4-26b-a4b-it
+VTRS,Viatris Inc,2024-08-08,2024-06-30,Neutral,-3.06,11.72,-14.78,,,gemma-4-26b-a4b-it
+YUM,YUM BRANDS INC,2024-08-08,2024-06-30,Neutral,-1.5,11.72,-13.22,,,gemma-4-26b-a4b-it
 CPAY,"CORPAY, INC.",2024-08-09,2024-06-30,Neutral,21.99,12.09,9.9,,,gemma-4-26b-a4b-it
 DDOG,"Datadog, Inc.",2024-08-09,2024-06-30,Neutral,15.59,12.09,3.5,,,gemma-4-26b-a4b-it
 ECHO,EchoStar CORP,2024-08-09,2024-06-30,Bearish,55.55,12.09,43.46,False,False,gemma-4-26b-a4b-it
+EVRG,"Evergy, Inc.",2024-08-09,2024-06-30,Neutral,5.79,12.09,-6.3,,,gemma-4-26b-a4b-it
 EXPE,"Expedia Group, Inc.",2024-08-09,2024-06-30,Neutral,33.94,12.09,21.84,,,gemma-4-26b-a4b-it
+KKR,KKR & Co. Inc.,2024-08-09,2024-06-30,Neutral,32.73,12.09,20.63,,,gemma-4-26b-a4b-it
 PODD,INSULET CORP,2024-08-09,2024-06-30,Bullish,34.46,12.09,22.37,True,True,gemma-4-26b-a4b-it
 SOLV,Solventum Corp,2024-08-09,2024-06-30,Bearish,23.9,12.09,11.81,False,False,gemma-4-26b-a4b-it
 SW,Smurfit Westrock plc,2024-08-09,2024-06-30,Bearish,38.21,12.09,26.12,False,False,gemma-4-26b-a4b-it
 TTWO,TAKE TWO INTERACTIVE SOFTWARE INC,2024-08-09,2024-06-30,Neutral,23.72,12.09,11.63,,,gemma-4-26b-a4b-it
 UNH,UNITEDHEALTH GROUP INC,2024-08-09,2024-06-30,Neutral,8.74,12.09,-3.35,,,gemma-4-26b-a4b-it
+VST,Vistra Corp.,2024-08-09,2024-06-30,Bullish,73.01,12.09,60.92,True,True,gemma-4-26b-a4b-it
 HD,"HOME DEPOT, INC.",2024-08-20,2024-07-28,Neutral,12.43,5.59,6.84,,,gemma-4-26b-a4b-it
 ADI,ANALOG DEVICES INC,2024-08-21,2024-08-03,Bearish,-7.14,5.62,-12.76,True,True,gemma-4-26b-a4b-it
 AMAT,APPLIED MATERIALS INC /DE,2024-08-22,2024-07-28,Bullish,-14.84,6.49,-21.33,False,False,gemma-4-26b-a4b-it
