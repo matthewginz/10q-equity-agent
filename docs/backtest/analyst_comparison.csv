@@ -150,7 +150,7 @@ PYPL,"PayPal Holdings, Inc.",2024-07-30,Bullish,Bullish,35,15,20,0,0.429,63.29,7
 SBUX,STARBUCKS CORP,2024-07-30,Neutral,Bullish,22,8,14,0,0.364,71.78,91.3,27.2,29.86,22.36,2.79,,True,,True,False,gemma-4-26b-a4b-it
 SPGI,S&P Global Inc.,2024-07-30,Bullish,Bullish,10,9,1,0,0.9,454.0,499.11,9.94,-0.08,-7.57,17.62,False,False,False,False,True,gemma-4-26b-a4b-it
 SWK,"STANLEY BLACK & DECKER, INC.",2024-07-30,Neutral,Neutral,10,3,5,2,0.1,96.62,94.67,-2.01,-2.17,-9.66,16.48,,,,,True,gemma-4-26b-a4b-it
-TXT,TEXTRON INC,2024-07-30,Neutral,Bullish,9,7,1,1,0.667,91.86,100.22,9.1,-9.53,-17.02,8.62,,False,,False,False,gemma-4-26b-a4b-it
+TXT,TEXTRON INC,2024-07-30,Neutral,Bullish,9,7,1,1,0.667,91.86,100.22,9.1,-9.53,-17.02,8.63,,False,,False,False,gemma-4-26b-a4b-it
 WELL,WELLTOWER INC.,2024-07-30,Neutral,Bullish,14,10,4,0,0.714,107.97,101.32,-6.16,17.0,9.51,19.68,,True,,True,False,gemma-4-26b-a4b-it
 XYL,Xylem Inc.,2024-07-30,Bullish,Bullish,13,10,3,0,0.769,129.74,144.58,11.44,-1.75,-9.25,2.19,False,False,False,False,True,gemma-4-26b-a4b-it
 ZBRA,ZEBRA TECHNOLOGIES CORP,2024-07-30,Neutral,Bullish,12,7,4,1,0.5,348.12,323.36,-7.11,4.44,-3.05,12.64,,True,,False,False,gemma-4-26b-a4b-it
@@ -184,7 +184,7 @@ PCAR,PACCAR INC,2024-07-31,Neutral,Bullish,11,4,7,0,0.364,92.15,117.3,27.29,8.47
 PFG,PRINCIPAL FINANCIAL GROUP INC,2024-07-31,Neutral,Neutral,12,1,10,1,0.0,75.25,85.5,13.62,4.18,-1.77,2.16,,,,,True,gemma-4-26b-a4b-it
 PSX,Phillips 66,2024-07-31,Neutral,Bullish,12,9,3,0,0.75,135.01,160.58,18.94,-14.56,-20.51,1.92,,False,,False,False,gemma-4-26b-a4b-it
 QCOM,QUALCOMM INC/DE,2024-07-31,Bullish,Bullish,26,17,8,1,0.615,172.47,199.79,15.84,-2.23,-8.18,0.88,False,False,False,False,True,gemma-4-26b-a4b-it
-SWKS,"SKYWORKS SOLUTIONS, INC.",2024-07-31,Neutral,Neutral,19,4,14,1,0.158,105.28,106.79,1.44,-13.16,-19.1,27.56,,,,,True,gemma-4-26b-a4b-it
+SWKS,"SKYWORKS SOLUTIONS, INC.",2024-07-31,Neutral,Neutral,19,4,14,1,0.158,105.28,106.79,1.44,-13.16,-19.1,27.57,,,,,True,gemma-4-26b-a4b-it
 SYK,STRYKER CORP,2024-07-31,Bullish,Bullish,18,14,4,0,0.778,321.25,372.72,16.02,9.88,3.94,0.49,True,True,True,True,True,gemma-4-26b-a4b-it
 TMUS,"T-Mobile US, Inc.",2024-07-31,Bullish,Bullish,15,15,0,0,1.0,175.43,193.47,10.28,24.42,18.47,10.96,True,True,True,True,True,gemma-4-26b-a4b-it
 TT,Trane Technologies plc,2024-07-31,Bullish,Bullish,14,6,7,1,0.357,328.08,312.36,-4.79,17.13,11.19,5.8,True,True,True,True,True,gemma-4-26b-a4b-it
@@ -499,7 +499,7 @@ CSGP,"COSTAR GROUP, INC.",2024-10-23,Neutral,Bullish,13,11,2,0,0.846,72.82,95.85
 DGX,QUEST DIAGNOSTICS INC,2024-10-23,Neutral,Bullish,11,4,7,0,0.364,152.22,154.0,1.17,-2.37,-7.06,9.46,,False,,False,False,gemma-4-26b-a4b-it
 FISV,FISERV INC,2024-10-23,Bullish,Insufficient,0,0,0,0,,202.36,,,3.27,-1.42,29.71,True,,False,,,gemma-4-26b-a4b-it
 GD,GENERAL DYNAMICS CORP,2024-10-23,Bullish,Bullish,17,10,7,0,0.588,294.39,322.8,9.65,-10.29,-14.98,5.12,False,False,False,False,True,gemma-4-26b-a4b-it
-GEV,GE Vernova Inc.,2024-10-23,Neutral,Bullish,22,17,5,0,0.773,278.7,262.18,-5.93,48.75,44.06,74.93,,True,,True,False,gemma-4-26b-a4b-it
+GEV,GE Vernova Inc.,2024-10-23,Neutral,Bullish,22,17,5,0,0.773,278.7,262.18,-5.93,48.75,44.06,74.92,,True,,True,False,gemma-4-26b-a4b-it
 HLT,Hilton Worldwide Holdings Inc.,2024-10-23,Neutral,Bullish,20,10,10,0,0.5,232.5,220.37,-5.22,6.06,1.37,9.61,,True,,True,False,gemma-4-26b-a4b-it
 JNJ,JOHNSON & JOHNSON,2024-10-23,Neutral,Bullish,12,7,5,0,0.583,157.13,175.58,11.75,-9.96,-14.65,4.68,,False,,False,False,gemma-4-26b-a4b-it
 LII,LENNOX INTERNATIONAL INC,2024-10-23,Bullish,Neutral,11,4,6,1,0.273,599.59,571.7,-4.65,9.04,4.35,11.94,True,,True,,False,gemma-4-26b-a4b-it
@@ -604,7 +604,7 @@ EQT,EQT Corp,2024-10-30,Bearish,Bullish,16,10,6,0,0.625,37.62,42.69,13.47,29.92,
 ESS,"ESSEX PROPERTY TRUST, INC.",2024-10-30,Neutral,Neutral,20,5,14,1,0.2,275.46,286.63,4.05,-3.53,-8.11,3.78,,,,,True,gemma-4-26b-a4b-it
 EXC,EXELON CORP,2024-10-30,Neutral,Neutral,13,4,9,0,0.308,36.9,41.36,12.08,1.29,-3.29,4.83,,,,,True,gemma-4-26b-a4b-it
 FRT,FEDERAL REALTY INVESTMENT TRUST,2024-10-30,Neutral,Bullish,13,9,4,0,0.692,105.97,117.77,11.13,-3.9,-8.48,2.26,,False,,False,False,gemma-4-26b-a4b-it
-FTV,Fortive Corp,2024-10-30,Neutral,Bullish,12,8,4,0,0.667,53.85,89.1,65.46,11.63,7.05,2.42,,True,,True,False,gemma-4-26b-a4b-it
+FTV,Fortive Corp,2024-10-30,Neutral,Bullish,12,8,4,0,0.667,53.85,89.1,65.46,11.63,7.05,2.43,,True,,True,False,gemma-4-26b-a4b-it
 GEHC,GE HealthCare Technologies Inc.,2024-10-30,Neutral,Bullish,13,7,5,1,0.462,86.91,94.23,8.42,0.71,-3.87,4.59,,True,,False,False,gemma-4-26b-a4b-it
 GOOG,Alphabet Inc.,2024-10-30,Bullish,Bullish,11,10,1,0,0.909,174.92,185.36,5.97,12.01,7.43,2.27,True,True,True,True,True,gemma-4-26b-a4b-it
 GOOGL,Alphabet Inc.,2024-10-30,Bullish,Bullish,36,29,7,0,0.806,173.24,200.39,15.67,12.07,7.5,2.3,True,True,True,True,True,gemma-4-26b-a4b-it
@@ -1193,7 +1193,7 @@ AMCR,Amcor plc,2025-05-01,Neutral,Bullish,8,3,5,0,0.375,41.55,10.95,-73.65,6.44,
 AME,AMETEK INC/,2025-05-01,Bullish,Bullish,9,6,2,1,0.556,165.69,202.25,22.07,5.86,-8.08,-9.21,True,True,False,False,True,gemma-4-26b-a4b-it
 APD,"Air Products & Chemicals, Inc.",2025-05-01,Bearish,Bullish,16,11,4,1,0.625,263.41,329.07,24.93,7.28,-6.66,-18.33,False,True,True,False,False,gemma-4-26b-a4b-it
 APTV,Aptiv PLC,2025-05-01,Bearish,Bullish,19,12,6,1,0.579,56.96,78.59,37.97,17.06,3.12,-8.75,False,True,False,True,False,gemma-4-26b-a4b-it
-BDX,BECTON DICKINSON & CO,2025-05-01,Bearish,Bullish,7,7,0,0,1.0,128.56,272.86,112.25,7.72,-6.22,-31.22,False,True,True,False,False,gemma-4-26b-a4b-it
+BDX,BECTON DICKINSON & CO,2025-05-01,Bearish,Bullish,7,7,0,0,1.0,128.56,272.86,112.25,7.72,-6.22,-31.21,False,True,True,False,False,gemma-4-26b-a4b-it
 BIIB,BIOGEN INC.,2025-05-01,Neutral,Bullish,25,12,13,0,0.48,120.93,209.36,73.12,4.72,-9.22,-15.98,,True,,False,False,gemma-4-26b-a4b-it
 BR,"BROADRIDGE FINANCIAL SOLUTIONS, INC.",2025-05-01,Bullish,Neutral,5,1,4,0,0.2,221.24,241.0,8.93,8.58,-5.36,-3.91,True,,False,,False,gemma-4-26b-a4b-it
 BSX,BOSTON SCIENTIFIC CORP,2025-05-01,Bullish,Bullish,23,22,1,0,0.957,103.19,112.57,9.09,3.46,-10.48,0.81,True,True,False,False,True,gemma-4-26b-a4b-it
@@ -1264,7 +1264,7 @@ BX,Blackstone Inc.,2025-05-02,Bearish,Bullish,13,6,7,0,0.462,131.26,152.85,16.44
 CBOE,"Cboe Global Markets, Inc.",2025-05-02,Bullish,Neutral,13,4,7,2,0.154,224.11,213.33,-4.81,6.77,-5.09,11.13,True,,False,,False,gemma-4-26b-a4b-it
 CHRW,"C. H. ROBINSON WORLDWIDE, INC.",2025-05-02,Neutral,Bullish,19,11,7,1,0.526,88.45,113.95,28.82,27.79,15.94,-8.12,,True,,True,False,gemma-4-26b-a4b-it
 CI,Cigna Group,2025-05-02,Neutral,Bullish,16,15,1,0,0.938,324.13,373.69,15.29,-19.74,-31.6,14.34,,False,,False,False,gemma-4-26b-a4b-it
-CPT,CAMDEN PROPERTY TRUST,2025-05-02,Neutral,Neutral,18,7,10,1,0.333,120.87,127.75,5.69,-8.81,-20.67,6.3,,,,,True,gemma-4-26b-a4b-it
+CPT,CAMDEN PROPERTY TRUST,2025-05-02,Neutral,Neutral,18,7,10,1,0.333,115.07,127.75,11.02,-8.81,-20.67,7.22,,,,,True,gemma-4-26b-a4b-it
 DD,"DuPont de Nemours, Inc.",2025-05-02,Bearish,Bullish,13,10,3,0,0.769,82.03,85.38,4.09,7.55,-4.3,-11.99,False,True,True,False,False,gemma-4-26b-a4b-it
 EG,"EVEREST GROUP, LTD.",2025-05-02,Bearish,Bullish,10,4,6,0,0.4,340.32,395.0,16.07,-3.05,-14.9,0.82,True,False,True,False,False,gemma-4-26b-a4b-it
 ETN,Eaton Corp plc,2025-05-02,Bullish,Bullish,17,11,6,0,0.647,294.52,343.75,16.72,28.81,16.96,-7.85,True,True,True,True,True,gemma-4-26b-a4b-it
@@ -1622,7 +1622,7 @@ ESS,"ESSEX PROPERTY TRUST, INC.",2025-07-30,Neutral,Neutral,18,7,10,1,0.333,258.
 FE,FIRSTENERGY CORP,2025-07-30,Neutral,Bullish,14,6,8,0,0.429,39.76,46.17,16.11,11.6,3.01,-1.23,,True,,True,False,gemma-4-26b-a4b-it
 FICO,FAIR ISAAC CORP,2025-07-30,Bullish,Bullish,12,10,2,0,0.833,1527.8,2175.92,42.42,9.09,0.5,-23.67,True,True,True,True,True,gemma-4-26b-a4b-it
 FTV,Fortive Corp,2025-07-30,Bearish,Bullish,14,7,7,0,0.5,49.37,69.83,41.44,-0.87,-9.46,-1.23,True,False,True,False,False,gemma-4-26b-a4b-it
-GEHC,GE HealthCare Technologies Inc.,2025-07-30,Neutral,Bullish,11,8,3,0,0.727,71.5,89.0,24.47,10.88,2.29,5.92,,True,,True,False,gemma-4-26b-a4b-it
+GEHC,GE HealthCare Technologies Inc.,2025-07-30,Neutral,Bullish,11,8,3,0,0.727,71.5,89.0,24.47,10.88,2.29,5.91,,True,,True,False,gemma-4-26b-a4b-it
 GRMN,GARMIN LTD,2025-07-30,Bullish,Neutral,4,1,1,2,-0.25,217.08,214.75,-1.07,12.43,3.84,19.12,True,,True,,False,gemma-4-26b-a4b-it
 HSY,HERSHEY CO,2025-07-30,Bearish,Neutral,19,0,14,5,-0.263,181.91,166.22,-8.62,-3.81,-12.4,13.94,True,,True,,False,gemma-4-26b-a4b-it
 HUBB,HUBBELL INC,2025-07-30,Bullish,Bullish,8,3,5,0,0.375,430.89,456.25,5.89,4.4,-4.19,27.91,True,True,False,False,True,gemma-4-26b-a4b-it
@@ -1762,7 +1762,7 @@ AXON,"AXON ENTERPRISE, INC.",2025-08-05,Neutral,Bullish,14,12,2,0,0.857,867.12,7
 BALL,BALL Corp,2025-08-05,Neutral,Bullish,11,6,4,1,0.455,53.35,65.18,22.18,-12.91,-22.03,7.59,,False,,False,False,gemma-4-26b-a4b-it
 BAX,BAXTER INTERNATIONAL INC,2025-08-05,Bearish,Neutral,9,2,6,1,0.111,22.64,31.78,40.39,-19.71,-28.83,-25.24,True,,True,,False,gemma-4-26b-a4b-it
 BG,Bunge Global SA,2025-08-05,Bearish,Bullish,5,2,3,0,0.4,79.65,81.6,2.45,15.09,5.97,9.52,False,True,False,True,False,gemma-4-26b-a4b-it
-CMI,CUMMINS INC,2025-08-05,Bullish,Bullish,11,5,5,1,0.364,365.98,363.0,-0.82,17.87,8.76,25.98,True,True,True,True,True,gemma-4-26b-a4b-it
+CMI,CUMMINS INC,2025-08-05,Bullish,Bullish,11,5,5,1,0.364,365.99,363.0,-0.82,17.87,8.76,25.98,True,True,True,True,True,gemma-4-26b-a4b-it
 DD,"DuPont de Nemours, Inc.",2025-08-05,Neutral,Bullish,11,8,3,0,0.727,89.08,86.18,-3.26,14.81,5.69,13.13,,True,,True,False,gemma-4-26b-a4b-it
 DUK,Duke Energy CORP,2025-08-05,Neutral,Bullish,17,10,7,0,0.588,118.77,127.93,7.71,0.6,-8.52,2.06,,True,,False,False,gemma-4-26b-a4b-it
 DVA,DAVITA INC.,2025-08-05,Neutral,Neutral,4,1,2,1,0.0,140.52,163.25,16.18,-15.28,-24.4,-2.39,,,,,True,gemma-4-26b-a4b-it
@@ -1991,7 +1991,7 @@ SYF,Synchrony Financial,2025-10-22,Neutral,Bullish,15,9,6,0,0.6,71.81,82.0,14.18
 URI,"UNITED RENTALS, INC.",2025-10-22,Neutral,Bullish,13,11,1,1,0.769,983.47,961.25,-2.26,-7.97,-9.74,13.5,,False,,False,False,gemma-4-26b-a4b-it
 VRT,Vertiv Holdings Co,2025-10-22,Bullish,Bullish,17,14,2,1,0.765,171.41,165.07,-3.7,2.13,0.37,31.15,True,True,True,True,True,gemma-4-26b-a4b-it
 WAB,WESTINGHOUSE AIR BRAKE TECHNOLOGIES CORP,2025-10-22,Bullish,Bullish,8,6,2,0,0.75,192.53,224.75,16.73,17.79,16.02,-3.5,True,True,True,True,True,gemma-4-26b-a4b-it
-ALLE,Allegion plc,2025-10-23,Bullish,Neutral,8,2,6,0,0.25,169.27,176.12,4.05,-3.12,-5.45,3.53,False,,False,,False,gemma-4-26b-a4b-it
+ALLE,Allegion plc,2025-10-23,Bullish,Neutral,8,2,6,0,0.25,169.27,176.12,4.05,-3.12,-5.45,3.52,False,,False,,False,gemma-4-26b-a4b-it
 CBRE,"CBRE GROUP, INC.",2025-10-23,Bullish,Bullish,9,7,2,0,0.778,164.2,170.78,4.01,3.71,1.38,11.27,True,True,True,True,True,gemma-4-26b-a4b-it
 CNP,CENTERPOINT ENERGY INC,2025-10-23,Neutral,Bullish,10,4,6,0,0.4,38.72,40.75,5.24,0.38,-1.95,3.83,,True,,False,False,gemma-4-26b-a4b-it
 DOV,DOVER Corp,2025-10-23,Neutral,Bullish,12,7,5,0,0.583,179.38,212.25,18.32,15.4,13.07,-2.55,,True,,True,False,gemma-4-26b-a4b-it
@@ -2637,7 +2637,7 @@ IEX,IDEX CORP /DE/,2026-04-29,Bullish,Bullish,8,6,2,0,0.75,215.86,229.62,6.37,4.
 IR,Ingersoll Rand Inc.,2026-04-29,Neutral,Bullish,7,4,3,0,0.571,77.42,96.0,24.0,11.7,7.32,-12.82,,True,,True,False,gemma-4-26b-a4b-it
 LII,LENNOX INTERNATIONAL INC,2026-04-29,Neutral,Neutral,12,3,7,2,0.083,516.38,569.91,10.37,5.37,0.99,4.64,,,,,True,gemma-4-26b-a4b-it
 MGM,MGM Resorts International,2026-04-29,Neutral,Neutral,14,4,7,3,0.071,39.27,42.67,8.66,17.65,13.26,17.79,,,,,True,gemma-4-26b-a4b-it
-MSFT,MICROSOFT CORP,2026-04-29,Bullish,Bullish,33,30,3,0,0.909,422.75,565.91,33.86,-7.13,-11.51,-1.86,False,False,False,False,True,gemma-4-26b-a4b-it
+MSFT,MICROSOFT CORP,2026-04-29,Bullish,Bullish,33,30,3,0,0.909,422.75,565.91,33.87,-7.13,-11.51,-1.86,False,False,False,False,True,gemma-4-26b-a4b-it
 OKE,ONEOK INC /NEW/,2026-04-29,Neutral,Bullish,15,9,6,0,0.6,87.22,92.67,6.25,0.61,-3.77,15.25,,True,,False,False,gemma-4-26b-a4b-it
 OMC,OMNICOM GROUP INC.,2026-04-29,Bearish,Bullish,6,4,1,1,0.5,74.62,97.17,30.23,14.37,9.99,1.56,False,True,False,True,False,gemma-4-26b-a4b-it
 PCAR,PACCAR INC,2026-04-29,Neutral,Neutral,10,2,8,0,0.2,117.46,117.0,-0.39,17.35,12.97,-3.95,,,,,True,gemma-4-26b-a4b-it
@@ -2983,3 +2983,5 @@ DELL,Dell Technologies Inc.,2026-06-09,Bullish,Bullish,19,14,5,0,0.737,381.15,48
 AZO,AUTOZONE INC,2026-06-12,Bullish,Bullish,20,17,3,0,0.85,3116.3,3991.11,28.07,-7.54,-9.97,-12.53,False,False,False,False,True,gemma-4-26b-a4b-it
 ADBE,ADOBE INC.,2026-06-15,Bearish,Neutral,26,5,18,3,0.077,206.36,254.1,23.13,28.71,27.65,-18.82,False,,False,,False,gemma-4-26b-a4b-it
 ACN,Accenture plc,2026-06-18,Bullish,Bullish,20,12,7,1,0.55,126.46,253.2,100.22,49.96,48.98,-35.46,True,True,True,True,True,gemma-4-26b-a4b-it
+MKC,MCCORMICK & CO INC,2026-06-25,Bearish,Bullish,9,5,4,0,0.556,47.92,65.88,37.49,2.45,-2.37,-8.08,False,True,True,False,False,gemma-4-26b-a4b-it
+MU,MICRON TECHNOLOGY INC,2026-06-25,Bullish,Bullish,32,30,2,0,0.938,1213.37,1043.8,-13.98,-11.66,-16.48,239.87,False,False,False,False,True,gemma-4-26b-a4b-it
