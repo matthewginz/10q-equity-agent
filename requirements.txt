@@ -1,7 +1,7 @@
-streamlit>=1.64.0
+streamlit==1.64.0
 streamlit-searchbox==0.1.24
 pillow>=12.0
-pandas>=2.0
+pandas==2.3.3
 requests==2.32.3
 python-dotenv==1.1.0
 google-genai==2.17.0
