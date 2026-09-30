@@ -20,11 +20,13 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 
-from core.stats import Z_95, HitRate, hit_rate
+from core.stats import HitRate, hit_rate
 
 COHORTS_PER_YEAR = 4          # 90-day holds, one cohort per filing quarter
+BOOTSTRAP_REPS = 10_000
 MIN_PER_SIDE = 5              # a quarter needs this many longs AND shorts to count
 MIN_COHORTS_FOR_SHARPE = 4    # below this a Sharpe is one lucky quarter, not a ratio worth showing
 
@@ -59,7 +61,7 @@ def baselines(df: pd.DataFrame, ret_col: str) -> list[Baseline]:
 class LongShort:
     cohorts: pd.DataFrame          # quarter, n_long, n_short, long_ret, short_ret, spread (all % per 90 days)
     mean_spread: float | None      # every Bullish avg minus every Bearish avg (% per 90 days)
-    ci_low: float | None           # Welch 95% interval on that difference
+    ci_low: float | None           # quarter-clustered 95% interval on that difference (None under 2 quarters)
     ci_high: float | None
     sharpe: float | None           # annualized, from the quarterly cohort spreads
     winning_cohorts: int
@@ -67,12 +69,53 @@ class LongShort:
     max_drawdown: float | None     # worst peak-to-trough of `cumulative` (e.g. -0.08)
 
 
-def _welch(long: pd.Series, short: pd.Series) -> tuple[float | None, float | None, float | None]:
+def cluster_ci(per_cluster: pd.DataFrame, stat, reps: int = BOOTSTRAP_REPS,
+               seed: int = 0) -> tuple[float | None, float | None]:
+    """95% bootstrap interval for stat(column totals), resampling whole filing quarters.
+    Filings from the same quarter share one market, so they aren't independent; treating
+    them as if they were (a Welch or McNemar test) overstates significance."""
+    k = len(per_cluster)
+    if k < 2:
+        return None, None
+    counts = np.random.default_rng(seed).multinomial(k, np.full(k, 1 / k), size=reps)
+    totals = pd.DataFrame(counts @ per_cluster.to_numpy(dtype=float), columns=per_cluster.columns)
+    draws = stat(totals).replace([np.inf, -np.inf], np.nan).dropna()   # resamples missing one side
+    low, high = np.percentile(draws, [2.5, 97.5])
+    return float(low), float(high)
+
+
+def _spread_ci(traded: pd.DataFrame, ret_col: str) -> tuple[float | None, float | None, float | None]:
+    long = traded.loc[traded["agent_stance"] == "Bullish", ret_col]
+    short = traded.loc[traded["agent_stance"] == "Bearish", ret_col]
     if len(long) < 2 or len(short) < 2:
         return None, None, None
-    diff = float(long.mean() - short.mean())
-    half = Z_95 * math.sqrt(long.var() / len(long) + short.var() / len(short))
-    return diff, diff - half, diff + half
+    is_long = traded["agent_stance"] == "Bullish"
+    per_quarter = pd.DataFrame({
+        "long_sum": traded[ret_col].where(is_long, 0), "n_long": is_long.astype(int),
+        "short_sum": traded[ret_col].where(~is_long, 0), "n_short": (~is_long).astype(int),
+    }).groupby(traded["quarter"]).sum()
+    low, high = cluster_ci(per_quarter, lambda t: t.long_sum / t.n_long - t.short_sum / t.n_short)
+    return float(long.mean() - short.mean()), low, high
+
+
+@dataclass(frozen=True)
+class HeadToHead:
+    agent: float | None       # agent hit rate on filings where both made a scored directional call
+    street: float | None
+    n: int
+    ci_low: float | None      # quarter-clustered 95% interval on agent minus Street (pts)
+    ci_high: float | None
+
+
+def head_to_head(df: pd.DataFrame, agent_col: str, street_col: str) -> HeadToHead:
+    both = df[df[agent_col].notna() & df[street_col].notna()]
+    if both.empty:
+        return HeadToHead(None, None, 0, None, None)
+    agent, street = both[agent_col].astype(bool), both[street_col].astype(bool)
+    per_quarter = pd.DataFrame({"agent": agent.astype(int), "street": street.astype(int), "n": 1}
+                               ).groupby(both["quarter"]).sum()
+    low, high = cluster_ci(per_quarter, lambda t: 100 * (t.agent - t.street) / t.n)
+    return HeadToHead(float(agent.mean()), float(street.mean()), len(both), low, high)
 
 
 def _max_drawdown(curve: list[float]) -> float | None:
@@ -101,8 +144,7 @@ def long_short(df: pd.DataFrame, ret_col: str, min_per_side: int = MIN_PER_SIDE)
     sharpe = (float(spreads.mean() / spreads.std() * math.sqrt(COHORTS_PER_YEAR))
               if len(spreads) >= MIN_COHORTS_FOR_SHARPE and spreads.std() > 0 else None)
     cumulative = (1 + spreads / 100).cumprod().tolist()
-    mean, low, high = _welch(traded.loc[traded["agent_stance"] == "Bullish", ret_col],
-                             traded.loc[traded["agent_stance"] == "Bearish", ret_col])
+    mean, low, high = _spread_ci(traded, ret_col)
     return LongShort(cohorts=cohorts, mean_spread=mean, ci_low=low, ci_high=high, sharpe=sharpe,
                      winning_cohorts=int((spreads > 0).sum()), cumulative=cumulative,
                      max_drawdown=_max_drawdown(cumulative))

@@ -4,10 +4,11 @@
 
 Enter any US-listed ticker. Pulls its real, latest 10-Q from SEC EDGAR
 (free, public, no key), computes standard financial ratios from the
-filing's actual structured (XBRL) data, then runs a 5-step LLM research
+filing's actual structured (XBRL) data, then runs a 6-step LLM research
 pipeline against the real filing text to produce a quantitative snapshot,
-a risk synthesis, a narrative-vs-numbers consistency check, a capital
-allocation read, and a final equity research stance.
+a risk synthesis, segment and forward-looking detail, a narrative-vs-numbers
+consistency check, a capital allocation read, and a final equity research
+stance.
 
 ## Why this exists
 
@@ -30,8 +31,8 @@ core/ratios.py          ── profitability / liquidity / leverage / cash flow 
     │                       data (not hardcoded row labels) -- works for any
     │                       filer's actual reported figures
     ▼
-services/pipeline.py    ── 5 sequential LLM steps, each grounded in the
-    │                       previous steps' real output, not 5 independent
+services/pipeline.py    ── 6 sequential LLM steps, each grounded in the
+    │                       previous steps' real output, not 6 independent
     │                       prompts against the same raw context
     ▼
 app.py                  ── Streamlit router: views/analyze.py (live analysis)

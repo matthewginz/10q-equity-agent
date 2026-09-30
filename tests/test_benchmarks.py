@@ -6,7 +6,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from core.benchmarks import baselines, long_short
+from core.benchmarks import baselines, head_to_head, long_short
 
 
 def _frame(rows: list[tuple[str, str, float | None, float | None]]) -> pd.DataFrame:
@@ -54,3 +54,35 @@ def test_thin_quarters_are_left_out_of_the_portfolio():
     result = long_short(df, "ret", min_per_side=3)
     assert result.cohorts.empty
     assert result.sharpe is None
+
+
+def test_spread_interval_resamples_whole_quarters():
+    # 3 longs vs 3 shorts per quarter, spread +6 in Q1 and -3 in Q2: the clustered interval
+    # spans both quarters' spreads, however tight the filings sit within each quarter.
+    df = _frame([(q, s, r, None) for q, s, r in [
+        ("2025 Q1", "Bullish", 8.0), ("2025 Q1", "Bullish", 8.0), ("2025 Q1", "Bullish", 8.0),
+        ("2025 Q1", "Bearish", 2.0), ("2025 Q1", "Bearish", 2.0), ("2025 Q1", "Bearish", 2.0),
+        ("2025 Q2", "Bullish", 0.0), ("2025 Q2", "Bullish", 0.0), ("2025 Q2", "Bullish", 0.0),
+        ("2025 Q2", "Bearish", 3.0), ("2025 Q2", "Bearish", 3.0), ("2025 Q2", "Bearish", 3.0)]])
+    result = long_short(df, "ret", min_per_side=3)
+    assert (result.ci_low, result.ci_high) == pytest.approx((-3.0, 6.0))
+
+
+def test_one_quarter_has_no_clustered_interval():
+    df = _frame([("2025 Q1", "Bullish", 5.0, None), ("2025 Q1", "Bullish", 7.0, None),
+                 ("2025 Q1", "Bearish", 1.0, None), ("2025 Q1", "Bearish", 2.0, None)])
+    result = long_short(df, "ret", min_per_side=2)
+    assert result.mean_spread == pytest.approx(4.5)
+    assert result.ci_low is None and result.ci_high is None
+
+
+def test_head_to_head_only_counts_filings_both_called():
+    df = pd.DataFrame({
+        "quarter": ["2025 Q1", "2025 Q1", "2025 Q2", "2025 Q2", "2025 Q2"],
+        "agent": [True, True, False, True, None],      # last row: agent Neutral, not compared
+        "street": [False, True, False, None, True],    # fourth row: no Street call, not compared
+    })
+    duel = head_to_head(df, "agent", "street")
+    assert duel.n == 3
+    assert (duel.agent, duel.street) == pytest.approx((2 / 3, 1 / 3))
+    assert duel.ci_low <= 100 / 3 <= duel.ci_high

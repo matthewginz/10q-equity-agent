@@ -24,7 +24,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from core.benchmarks import baselines, long_short
+from core.benchmarks import baselines, head_to_head, long_short
 from core.stats import HitRate, hit_rate
 from ui.tidy import tidy_output
 
@@ -155,6 +155,15 @@ def _sig_badge(r: HitRate) -> str:
     return f'<span class="tr-sig">≈ Could still be luck (p = {r.p_value:.2f})</span>'
 
 
+def _zero_badge(low: float | None, high: float | None) -> str:
+    """Badge for a quarter-clustered interval on a difference."""
+    if low is None:
+        return '<span class="tr-sig">Needs 2+ quarters to test</span>'
+    if low > 0 or high < 0:
+        return '<span class="tr-sig">✓ Interval excludes zero</span>'
+    return '<span class="tr-sig">≈ Could still be zero</span>'
+
+
 def _dot(stance: str) -> str:
     return f'<span class="tr-dot" style="background:{STANCE_COLOR_MAP.get(stance, NO_DATA_COLOR)}"></span>'
 
@@ -174,7 +183,7 @@ def render_header(df: pd.DataFrame, progress: dict | None) -> None:
     first, last = df["filed"].min(), df["filed"].max()
     st.markdown(
         f'<p class="tr-lede">The agent was backtested on <b>{len(df)} 10-Qs</b> from '
-        f"<b>{df['ticker'].nunique()} large-cap companies</b> (filed {first:%b %Y} – {last:%b %Y}), "
+        f"<b>{df['ticker'].nunique()} current S&P 500 companies</b> (filed {first:%b %Y} – {last:%b %Y}), "
         f"answered by {df['model'].nunique()} Google model{'s' if df['model'].nunique() != 1 else ''} "
         "(one model per filing). Each run used only the financial data and prices "
         "available on the filing date. Every call is scored against what the stock did over the next 90 days, "
@@ -197,17 +206,17 @@ def render_header(df: pd.DataFrame, progress: dict | None) -> None:
 
 def render_kpis(df: pd.DataFrame, cols: dict) -> None:
     agent, street = _rate(df[cols["agent"]]), _rate(df[cols["street"]])
-    comparable = df[df["agrees"].notna()]
-    agree = hit_rate(int(comparable["agrees"].astype(bool).sum()), len(comparable))
-    n_no_street = len(df) - len(comparable)
+    duel = head_to_head(df, cols["agent"], cols["street"])
     cards = [
         _kpi("Filings tested", f"{len(df)}", f"{df['ticker'].nunique()} companies · {df['quarter'].nunique()} quarters"),
+        _kpi("Agent vs. Wall Street", f"{_pct(duel.agent)} vs. {_pct(duel.street)}",
+             f"hit rates on the {duel.n} filings where both made a call"
+             + ("" if duel.ci_low is None else f" · gap 95% CI {duel.ci_low:+.1f} to {duel.ci_high:+.1f} pts"),
+             _zero_badge(duel.ci_low, duel.ci_high)),
         _kpi("Agent hit rate", _pct(agent.rate),
              f"{agent.hits} of {agent.n} Bullish/Bearish calls · {_ci(agent)}", _sig_badge(agent)),
         _kpi("Wall Street hit rate", _pct(street.rate),
              f"{street.hits} of {street.n} consensus calls · {_ci(street)}", _sig_badge(street)),
-        _kpi("Agreed with the Street", f"{agree.hits} of {agree.n}",
-             f"{_pct(agree.rate)} of filings" + (f" · {n_no_street} had no rating history" if n_no_street else "")),
     ]
     st.markdown('<div class="tr-kpis">' + "".join(cards) + "</div>", unsafe_allow_html=True)
 
@@ -256,12 +265,10 @@ def render_portfolio(df: pd.DataFrame, cols: dict) -> None:
     if ls.cohorts.empty or ls.mean_spread is None:
         st.info("Not enough Bullish and Bearish calls in any one quarter yet. This fills in as the backtest runs.")
         return
-    significant = ls.ci_low > 0 or ls.ci_high < 0
-    badge = ('<span class="tr-sig">✓ Interval excludes zero</span>' if significant
-             else '<span class="tr-sig">≈ Could still be zero</span>')
     cards = [
         _kpi("Long-short spread", f"{ls.mean_spread:+.1f} pts",
-             f"per 90 days · 95% CI {ls.ci_low:+.1f} to {ls.ci_high:+.1f}", badge),
+             "per 90 days" + ("" if ls.ci_low is None else f" · 95% CI {ls.ci_low:+.1f} to {ls.ci_high:+.1f}"),
+             _zero_badge(ls.ci_low, ls.ci_high)),
         _kpi("Sharpe ratio", "Too early" if ls.sharpe is None else f"{ls.sharpe:.2f}",
              f"annualized from {len(ls.cohorts)} quarterly portfolios"
              + (" (needs 4+)" if ls.sharpe is None else "")),
@@ -542,10 +549,13 @@ row records which one answered. The final stance is read from the agent's own fi
 *before* the filing date (within 12 months) maps to +1 / 0 / −1. The average above +⅓ is Bullish, below
 −⅓ Bearish, otherwise Neutral (at least 3 firms needed).
 
-**Scoring.** A Bullish or Bearish call is right if the stock moved that way over the next 90 calendar days.
-Switch to "Return vs. S&P 500" to score against the market instead, which removes the tailwind of a rising
-market. Neutral calls are shown, not scored. Intervals are 95% Wilson intervals. The p-value is a
-one-sided exact binomial test against a 50% coin flip.
+**Scoring.** By default a Bullish or Bearish call is right if the stock beat (or trailed) the S&P 500 over
+the next 90 calendar days. That is the default because in a rising market, a caller who says Bullish on
+nearly everything (as Wall Street does) looks right most of the time on raw returns without any stock-picking
+skill. Switch to "Raw return" to score the stock's own direction instead. Neutral calls are shown, not scored. Hit-rate intervals are 95% Wilson
+intervals, and the p-value is a one-sided exact binomial test against a 50% coin flip. Gaps (agent vs.
+Wall Street, Bullish vs. Bearish returns) use a bootstrap that resamples whole filing quarters: filings
+from the same quarter share one market, so treating them as independent would overstate significance.
 
 **Limits.**
 - **Model memory.** Gemini may have read about some of these companies' later results in training,
@@ -563,8 +573,11 @@ one-sided exact binomial test against a 50% coin flip.
 # ── Page ─────────────────────────────────────────────────────────────────
 df = load_comparison(_mtime("analyst_comparison.csv"))
 render_header(df, load_progress(_mtime("progress.json")))
-scoring = st.segmented_control("Score calls against", [RAW, VS_MARKET], default=RAW, key="tr_scoring") or RAW
+scoring = (st.segmented_control("Score calls against", [VS_MARKET, RAW], default=VS_MARKET, key="tr_scoring")
+           or VS_MARKET)
 cols = SCORING[scoring]
+st.caption("Default is vs. the S&P 500: in a rising market, calling nearly everything Bullish (as Wall Street "
+           "does) looks right on raw returns without any stock-picking skill.")
 render_kpis(df, cols)
 render_benchmarks(df, cols)
 render_portfolio(df, cols)
