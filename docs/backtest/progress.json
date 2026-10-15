@@ -1,11 +1,11 @@
 {
- "filings_in_window": 2996,
- "filings_done": 2993,
+ "filings_in_window": 2997,
+ "filings_done": 2994,
  "filed_from": "2024-07-01",
  "horizon_days": 90,
  "models": [
   "gemma-4-26b-a4b-it"
  ],
  "tickers": 503,
- "updated": "2026-10-14T04:47"
+ "updated": "2026-10-15T04:54"
 }
