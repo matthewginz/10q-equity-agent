@@ -2994,3 +2994,6 @@ STZ,"CONSTELLATION BRANDS, INC.",2026-07-01,2026-05-31,Neutral,-16.96,2.73,-19.6
 PEP,PEPSICO INC,2026-07-09,2026-06-13,Bullish,-9.29,3.65,-12.94,False,False,gemma-4-26b-a4b-it
 DAL,"DELTA AIR LINES, INC.",2026-07-10,2026-06-30,Bearish,-6.01,2.77,-8.78,True,True,gemma-4-26b-a4b-it
 ELV,"Elevance Health, Inc.",2026-07-15,2026-06-30,Bearish,9.43,3.33,6.1,False,False,gemma-4-26b-a4b-it
+FAST,FASTENAL CO,2026-07-16,2026-06-30,Bullish,12.03,2.77,9.26,True,True,gemma-4-26b-a4b-it
+GE,GENERAL ELECTRIC CO,2026-07-16,2026-06-30,Neutral,-11.06,2.77,-13.83,,,gemma-4-26b-a4b-it
+UAL,"United Airlines Holdings, Inc.",2026-07-16,2026-06-30,Neutral,-16.71,2.77,-19.48,,,gemma-4-26b-a4b-it
