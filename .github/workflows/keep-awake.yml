@@ -1,0 +1,21 @@
+# Backup for the "10Q-Streamlit-KeepAwake" Scheduled Task, which only runs while
+# Matthew's PC is on. Opens the live app as a logged-out visitor (wakes it if
+# asleep) and fails if it doesn't render; GitHub emails the owner on a failed run.
+name: keep-awake
+
+on:
+  schedule:
+    - cron: "23 */4 * * *"   # every 4h; Streamlit sleeps apps after 12h idle
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install playwright==1.62.0 && python -m playwright install --with-deps chromium
+      - run: python scripts/keep_awake.py
